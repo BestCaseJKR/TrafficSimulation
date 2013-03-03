@@ -40,7 +40,12 @@ public class Intersection implements VehicleAcceptor {
 	
 	@Override
 	public boolean isDriveable(Vehicle c) {
-		return c.getOrientation().equals(_light.getState().getAllowedOrientation());
+		if (c.getOrientation()== _light.getState().getAllowedOrientation()) {
+			System.out.println("Pass b/c " + _light.getState().getAllowedOrientation() + " != " + c.getOrientation());
+		} else {
+			System.out.println("Rejected b/c " + _light.getState().getAllowedOrientation() + " == " + c.getOrientation());			
+		}
+		return c.getOrientation()==_light.getState().getAllowedOrientation();
 	}
 	@Override
 	public boolean accept(Vehicle d) {

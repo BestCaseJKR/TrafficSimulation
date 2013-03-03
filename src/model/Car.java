@@ -10,6 +10,7 @@ public class Car implements Vehicle, Agent {
 		_ts = ts;
 		this.setCurrentVehicleAcceptor(r, this.getLength());
 		_orientation = r.getOrientation();
+		_ts.enqueue(ts.currentTime()+MP.simulationTimeStep, this);
 	}
 	
 	/**
@@ -42,32 +43,140 @@ public class Car implements Vehicle, Agent {
 	 * The color the car will appear as when displayed on the UI
 	 */
 	private java.awt.Color _color = new java.awt.Color((int)Math.ceil(Math.random()*255),(int)Math.ceil(Math.random()*255),(int)Math.ceil(Math.random()*255));
-	  
-  public void setCurrentVehicleAcceptor(VehicleAcceptor road, double requestedPostion) {
-	  
-	  _currentRoad = road;
-	  double orig = _position;
-	  _position = 0;
-	  _position = requestMove(requestedPostion);
-	  //System.out.println("Current Postion: " + _position + " Requested: " + requestedPostion + " velocity: " + _velocity + " orig : " + orig + " in Road: " + this.getCurrentRoad());
-  }
+	  /**
+	   * Updates currentRoad reference and places car manually at the requested position.
+	   * @param road
+	   * @param requestedPostion
+	   */
+	  public void setCurrentVehicleAcceptor(VehicleAcceptor road, double requestedPostion) {
+		  
+		  _currentRoad = road;
+		  //reset the position
+		  this.setPosition(0);
+		  //this.moveTo(requestedPostion);
+		  double free = this.checkFreeSpaceAhead();
+		  //if the road is clear AND we want to skip it, we need to pass the car along to the next road AGAIN
+		  if (free == this.getCurrentRoad().getLength() && requestedPostion > free) {
+			  if (sendCarToNextSeg(requestedPostion - free)) {
+				  return;
+			  } else {
+				  //the send op failed, just move to the free space
+				  this.setPosition(free);
+			  }
+		  } else if (requestedPostion > free) {
+			  //our request was greater than the free space, but less than the road length, 
+			  //take the free space
+			  this.setPosition(free);
+		  } else {
+			  //our request was shorter than the length and the free space, request granted
+			  this.setPosition(requestedPostion);
+		  }
+		  
+		  
+		  //this.setPosition(requestedPostion);
+		  System.out.println("Added to VA: Current Postion: " + _position + " Requested: " + requestedPostion + " velocity: " + _velocity  + " in Road: " + this.getCurrentRoad() + " FREE = " + free);
+	  }
 	
+	  void setPosition(double position) {
+		  _position = position;
+	  }
+  
+	  	public double checkFreeSpaceAhead() {
+	  		
+			//get a copy of all the vehicles in the VehicleAccpetor object
+			Queue<Vehicle> cars = this.getCurrentRoad().getCars();
+			//set pos to a base value, -1 in this car
+			double pos = -1;
+			//if no cars are found, return pos
+			if (cars == null) {
+				return pos;
+			}
+			
+			//for each car...
+			for	(Vehicle checkCar: cars) {
+				//make sure that we arent checking ourself
+				//then check to see if the car's back position would get in the way
+				//and that the object isn't behind us to being with
+				if (!this.equals(checkCar) && checkCar.getBackPosition() >= this.getBackPosition()	
+				) {
+					System.out.println("OBS " + checkCar + " obstructing " + this);
+					//this object is in our way. store the next free block
+					double tmpPos = checkCar.getBackPosition() - getPosition();
+					System.out.println("OBJECT IN WAY " + tmpPos);
+					if(tmpPos >= 0) {
+						//assuming the free block is >= 0, we set tmpPos with its value the first time we receive one
+						//pos will store the lowest value(thus the next free block) here
+						if (pos == -1) {
+							pos = tmpPos;
+						}
+					}
+					//now test tmpPos and pos, take the smaller value.
+					pos = (tmpPos < pos) ? tmpPos : pos;
+				} else  {
+					//if (!this.equals(checkCar)) System.out.println("NOT IN MY(" + this + " " + this.getPosition() + " r=" + toPosition + ") WAY " + checkCar + " " + checkCar.getBackPosition());
+					
+				}
+			}
+			//if pos has been set to something, return it
+			if (pos != -1) {
+				System.out.println("RM: " + this + " Return: " + pos);
+				return pos;
+			}
+			//testing for a bug. TODO: Remove test
+			if (pos < 0 && pos != -1) {
+				System.out.println("WTF " + pos);
+				System.exit(1);
+			}
+			//System.out.println("toPosition " + toPosition);
+			//if this is hit, we know that pos was never set. the road should be open
+			return this.getCurrentRoad().getLength() - this.getPosition();
+	  		
+	  	}
+	  	/**
+	  	 * Move the car to, at the most, the requested position
+	  	 * @param toPosition
+	  	 */
+	  	private void moveTo(double toPosition) {
+	  		//get the free space in front of us on this road
+	  		double freeSpace = checkFreeSpaceAhead();
+	  		//calculate the maximum move
+	  		double maxMove = toPosition;
+	  		//if the road is clear AND the maxMove is beyond the current road road. try to send to the next road
+	  		if ((freeSpace + this.getPosition()) >= this.getCurrentRoad().getLength()
+	  			&& (this.getPosition() + maxMove) >= this.getCurrentRoad().getLength()	)  {
+	  			//send to the next segment and request the appropriate space.
+	  			if (sendCarToNextSeg(maxMove - freeSpace)) {
+		    		  System.out.println("Sent car to next seg " + this);
+		    		  //_ts.enqueue(MP.simulationTimeStep + _ts.currentTime(), this);
+		    		  return;
+		    	} else {
+		    		//the car was rejected by the next road! set the max move to be the 
+		    		//free space...
+		    		maxMove = freeSpace;
+		    	}
+	  		}
+	  		
+	  		//calculate velocity
+	  		double velocity = (_velocity / (_brakeDistance - _stopDistance)) * (freeSpace - _stopDistance);
+	  		System.out.println("V1 = " + velocity);
+	  		velocity = Math.max(0, velocity);
+	  		System.out.println("V2 = " + velocity);
+	  		velocity = Math.min(_velocity, velocity);
+	  		double step = (velocity * MP.simulationTimeStep);
+	  		double nextPos = this.getPosition() + step;
+	  		System.out.println("C: " + this + " nextPos " + nextPos + " step " + Math.round(step) + " vs MM " + maxMove + " velocity = " + velocity + " fs: " + freeSpace + " rL = " + this.getCurrentRoad().getLength() + " VAL = " + (velocity * MP.simulationTimeStep));
+
+	  		
+	  		this.setPosition(nextPos);
+	  		
+	  	}
 	@Override
 	public void run() {
 			if (this.getCurrentRoad().getClass() == Intersection.class) {
 				System.out.println(this + " is inside the intersection!");
 			}
-
-		  double free = requestMove(_velocity * MP.simulationTimeStep);
-		  if ((_position + free) >= (this.getCurrentRoad().getLength()-this.getLength()) ) {
-	    	  
-	    	  if (sendCarToNextSeg(_velocity - free)) {
-	    		  System.out.println("Sent car to next seg " + this);
-	    		  _ts.enqueue(MP.simulationTimeStep + _ts.currentTime(), this);
-	    		  return;
-	    	  } 
-	      }
-	    _position += free;
+		//call moveTo and pass the maximum possible move for this car	
+		 this.moveTo(_velocity * MP.simulationTimeStep);
 	    //System.out.println("(" + _ts.currentTime() + ")Running Car: " + this.toString() + " free: " + free + " velocity " + _velocity + " new postion " + _position);
 		//re-enque the vehicle to wake up again at the next simulation timestep
 		_ts.enqueue(MP.simulationTimeStep + _ts.currentTime(), this);
@@ -113,6 +222,7 @@ public class Car implements Vehicle, Agent {
 			  //now make sure there is space for it and that is will accept it
 			  //System.out.println("Next " + next.getClass() + " " + this);
 			  if (!isSpaceForCar(next) || !next.accept(this)) {
+				  System.out.println("Rejected by " + next.getClass() + " " + this + " Driveable? " + next.isDriveable(this));
 				  return false;
 			  }
 			  //its been accepted, remove from the current road
@@ -299,6 +409,10 @@ public class Car implements Vehicle, Agent {
 		//System.out.println("toPosition " + toPosition);
 		//if this is hit, we know that pos was never set. the road should be open
 		return this.getCurrentRoad().getLength() - this.getPosition();
+	}
+	
+	public String toString() {
+		return "Car(" + this.hashCode() + ") P=" + this.getPosition() + " V=" + _velocity;
 	}
 	
 }

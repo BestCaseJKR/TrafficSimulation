@@ -71,5 +71,17 @@ public class Road implements VehicleAcceptor {
 	public double getLength() {
 		return _length;
 	}
+	
+	public String toString() {
+		
+		StringBuilder sb = new StringBuilder();
+		
+			for (Vehicle v: this.getCars()) {
+				sb.append(v.toString());
+			}
+		
+		return "Road(" + this.hashCode() + "): " + sb.toString();
+		
+	}
 
 }

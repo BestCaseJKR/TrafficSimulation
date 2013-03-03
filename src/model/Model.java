@@ -29,7 +29,7 @@ public class Model extends Observable implements Observer {
     _ts = t;
     _ts.addObserver(this);
     
-    setup(builder, t, 2, 3);
+    setup(builder, t, 1, 1);
     _animator = builder.getAnimator();
     super.addObserver(_animator);
 

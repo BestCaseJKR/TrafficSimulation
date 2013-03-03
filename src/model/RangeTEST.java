@@ -8,9 +8,9 @@ public class RangeTEST extends TestCase {
 	
 	public void testDoubleInRange() {
 		
-		double min = 10;
+		long min = 10;
 		
-		double max = 100;
+		long max = 100;
 		Range testcase1 = new Range(min, max);
 		
 		double gen = testcase1.getDoubleInRange();
