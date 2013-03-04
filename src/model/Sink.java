@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class Sink implements Agent, VehicleAcceptor {
 	
 	public Sink (TimeServer ts) {
 		_ts = ts;
+		_ts.enqueue(_ts.currentTime()+MP.simulationTimeStep, this);
 	}
 	/**
 	 * the vehicles in the sink are stored here before being destroyed
 	 */
-	private Queue<Vehicle> _cars = new LinkedList<Vehicle>();
+	private SortedSet<Vehicle> _cars = new TreeSet<Vehicle>();
 	/**
 	 * The attached TimeServer object
 	 */
@@ -23,6 +26,7 @@ public class Sink implements Agent, VehicleAcceptor {
 	public void run() {
 		for(Vehicle c: _cars) {
 			_cars.remove(c);
+			c.setDisposed();
 			c = null;
 		}
 		_ts.enqueue(_ts.currentTime() + MP.simulationTimeStep, this);
@@ -76,13 +80,13 @@ public class Sink implements Agent, VehicleAcceptor {
 	}
 
 	@Override
-	public Queue<Vehicle> getCars() {
+	public SortedSet<Vehicle> getCars() {
 		return _cars;
 	}
 
 	@Override
 	public double getLength() {
-		return 500;
+		return 50;
 	}
 
 }

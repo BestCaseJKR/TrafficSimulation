@@ -6,7 +6,7 @@ package model;
  * They are also responsible for moving themselves to a new VehicleAcceptor, checking
  * to see if there is space for itself on a VehicleAcceptor
  */
-public interface Vehicle {
+public interface Vehicle extends Disposable {
 	/**
 	 * Return the Vehicle's current VehicleAcceptor object
 	 * @return the Vehicle's current VehicleAcceptor object

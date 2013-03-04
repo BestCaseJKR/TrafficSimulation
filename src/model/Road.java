@@ -2,6 +2,9 @@ package model;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 
 public class Road implements VehicleAcceptor {
@@ -9,7 +12,7 @@ public class Road implements VehicleAcceptor {
 	/**
 	 * a list of vehicle objects currently "on" this road
 	 */
-	private Queue<Vehicle> _cars = new LinkedList<Vehicle>();
+	private SortedSet<Vehicle> _cars = new TreeSet<Vehicle>();
 	/**
 	 * the next vehicle acceptor in the graph
 	 */
@@ -63,7 +66,7 @@ public class Road implements VehicleAcceptor {
 	}
 
 	@Override
-	public Queue<Vehicle> getCars() {
+	public SortedSet<Vehicle> getCars() {
 		return _cars;
 	}
 

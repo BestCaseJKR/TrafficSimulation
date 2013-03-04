@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Queue;
+import java.util.SortedSet;
 /**
  * Interface describing an object capable of accepting Vehicle objects.
  * Very much like a road. Responsible for reporting if it is currently accepting
@@ -53,7 +54,7 @@ public interface VehicleAcceptor {
 	 * return a COPY of the cars currently in the VehicleAcceptor
 	 * @return
 	 */
-	public Queue<Vehicle> getCars();
+	public SortedSet<Vehicle> getCars();
 	/**
 	 * return the length of the road
 	 * @return

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class Intersection implements VehicleAcceptor {
 	
@@ -36,7 +38,7 @@ public class Intersection implements VehicleAcceptor {
 		return _light;
 	}
 
-	private Queue<Vehicle> _cars = new LinkedList<Vehicle>();
+	private SortedSet<Vehicle> _cars = new TreeSet<Vehicle>();
 	
 	@Override
 	public boolean isDriveable(Vehicle c) {
@@ -84,7 +86,7 @@ public class Intersection implements VehicleAcceptor {
 		return null;
 	}
 	@Override
-	public Queue<Vehicle> getCars() {
+	public SortedSet<Vehicle> getCars() {
 		return _cars;
 	}
 	@Override

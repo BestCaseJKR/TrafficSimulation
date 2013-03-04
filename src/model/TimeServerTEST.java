@@ -31,6 +31,7 @@ public class TimeServerTEST extends TestCase {
       implements Agent
     {
       public void run() {}
+
     }
 
     Agent x1 = new TestThatEnqueueFollowedByDequeueReturnsSameReference();
@@ -42,6 +43,7 @@ public class TimeServerTEST extends TestCase {
   public void testThatElementsAreInsertedInOrder() {
     class TestThatElementsAreInsertedInOrder implements Agent {
       public void run() {}
+
     }
 
     Agent x1 = new TestThatElementsAreInsertedInOrder();
@@ -68,6 +70,7 @@ public class TimeServerTEST extends TestCase {
     class TestToString implements Agent {
       public void run() {}
       public String toString() { return "x"; }
+
     }
 
     q.enqueue(0, new TestToString());
@@ -78,6 +81,7 @@ public class TimeServerTEST extends TestCase {
   public void testCurrentTime() {
     class TestCurrentTime implements Agent {
       public void run() {}
+
     }
 
     double expected = 1230;
@@ -99,6 +103,7 @@ public class TimeServerTEST extends TestCase {
       public void run() {
         _scratch = _myScratch;
       }
+
     }
 
     double time1 = 12;
