@@ -25,7 +25,7 @@ public class Sink implements Agent, VehicleAcceptor {
 	@Override
 	public void run() {
 		for(Vehicle c: _cars) {
-			_cars.remove(c);
+			remove(c);
 			c.setDisposed();
 			c = null;
 		}
@@ -47,9 +47,9 @@ public class Sink implements Agent, VehicleAcceptor {
 	@Override
 	public boolean accept(Vehicle d) {
 		if(d == null) throw new IllegalArgumentException();
-		System.out.println("Car reached sink");
+		//System.out.println("Car reached sink");
 		_cars.add(d);
-		
+	    d.setDisposed();
 		return true;
 		
 		
@@ -57,7 +57,8 @@ public class Sink implements Agent, VehicleAcceptor {
 
 	@Override
 	public void remove(Vehicle d) {
-		// TODO Auto-generated method stub
+		_cars.remove(d);
+		//System.out.println("Removed " + d + " from " + this);
 		
 	}
 
@@ -86,7 +87,7 @@ public class Sink implements Agent, VehicleAcceptor {
 
 	@Override
 	public double getLength() {
-		return 50;
+		return Double.MAX_VALUE;
 	}
 
 }

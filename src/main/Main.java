@@ -11,7 +11,7 @@ public class Main {
 	public static void main(String[] args) {
 		
 		SwingAnimatorBuilder build = new SwingAnimatorBuilder();
-		TimeServerQueue ts = new TimeServerQueue();
+		TimeServer ts = new TimeServerLinked();
 		
 		Model m = new Model(build, ts);
 		m.run(500);

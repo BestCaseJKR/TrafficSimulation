@@ -41,6 +41,7 @@ public class Road implements VehicleAcceptor {
 	public void remove(Vehicle d) {
 	    if (d != null) {
 	    	_cars.remove(d);
+	    	//System.out.println("Removed " + d + " from " + this);
 	    }
 	}
 

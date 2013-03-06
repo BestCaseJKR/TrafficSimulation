@@ -20,7 +20,7 @@ public class Source implements Agent {
 	public void run() {
 		      Car car = new Car(_ts, _next);
 		      System.out.println("Added Car at (" + _ts.currentTime() + "): " + car);
-		      _ts.enqueue(_ts.currentTime() + MP.simulationTimeStep, car);
+		      //_ts.enqueue(_ts.currentTime() + MP.simulationTimeStep, car);
 		      _next.accept(car);
 		      car.setCurrentVehicleAcceptor(_next, car.getLength());
 		      _ts.enqueue(_ts.currentTime() + _delay, this);

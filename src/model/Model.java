@@ -29,7 +29,7 @@ public class Model extends Observable implements Observer {
     _ts = t;
     _ts.addObserver(this);
     
-    setup(builder, t, 1, 1);
+    setup(builder, t, 2, 3);
     _animator = builder.getAnimator();
     super.addObserver(_animator);
 
@@ -63,6 +63,7 @@ public class Model extends Observable implements Observer {
 	    	li = new Light(_ts);
 	        intersections[i][j] = new Intersection();
 	        intersections[i][j].setLight(li);
+	        intersections[i][j].key = "I =" + i + " J=" + j;
 	        //builder.addLight(li, i, j);
 	        builder.addIntersection(intersections[i][j], i, j);
 	        ts.enqueue(li.getState().getDuration(), li);
@@ -168,7 +169,6 @@ public class Model extends Observable implements Observer {
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		System.out.println("Model UPDATE Called " + arg0.getClass());
 		this.setChanged();
 		this.notifyObservers(arg1);
 		

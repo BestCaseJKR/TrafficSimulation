@@ -63,7 +63,7 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 //		  double free = this.checkFreeSpaceAhead();
 		  //if the road is clear AND we want to skip it, we need to pass the car along to the next road AGAIN
 		  if (requestedPostion > road.getLength()) {
-			  System.out.println("SKIP ROAD");
+			  //System.out.println("SKIP ROAD");
 			  if (sendCarToNextSeg(requestedPostion - road.getLength())) {
 				  return;
 			  } else {
@@ -77,12 +77,16 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 		  
 		  
 		  //this.setPosition(requestedPostion);
-		  System.out.println("Added to VA: Current Postion: " + _position + " Requested: " + requestedPostion + " velocity: " + _velocity  + " in Road: " + this.getCurrentRoad());
+		  System.out.println("Added car(" + this.hashCode() + ") to VA: Current Postion: " + _position + " Requested: " + requestedPostion + " velocity: " + _velocity  + " in Road: " + this.getCurrentRoad());
 	  }
 	
 	  void setPosition(double position) {
-		  if (position > this.getCurrentRoad().getLength()) throw new IllegalArgumentException("Position " + position + " exceeds the road length " + this.getCurrentRoad().getLength());
+		  if (position > this.getCurrentRoad().getLength() || position < 0) throw new IllegalArgumentException("Position " + position + " exceeds the road length " + this.getCurrentRoad().getLength());
+		  
+		  //remove the car from the road its in, update the position then add it back to ensure its sorted properly
+		  this.getCurrentRoad().remove(this);
 		  _position = position;
+		  this.getCurrentRoad().accept(this);
 	  }
   
 	  	public double checkFreeSpaceAhead() {
@@ -91,28 +95,32 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 			SortedSet<Vehicle> cars = this.getCurrentRoad().getCars();
 			//if the set is empty, return the road length
 			if (cars.size() == 0) {
-				return this.getCurrentRoad().getLength();
+				double d = getFreeSpaceInOutsideVehicleAcceptor(this.getCurrentRoad().getNextSeg(this));
+				//System.out.println("Cars not found in road! " + this + " " + cars);
+				return this.getCurrentRoad().getLength() + d;
 			}
 			//if the current car isn't in the set, return the back position of the last car
-			if (!cars.contains(this)) {
-				System.out.println("Car not in road " + this + " return " + cars.last().getBackPosition());
-				return cars.last().getBackPosition();
-			}
+			//if (!cars.contains(this)) {
+			//	System.out.println("Car(" + this.hashCode() + ") not in road(" + this.getCurrentRoad() + ") " + this + " return " + cars.last().getBackPosition());
+			//	return cars.last().getBackPosition();
+			//}
 			
 			if (this.equals(cars.first())) {
 				//the car is first, return the remaining length of the road AND check the next roads for free space
 				double d = getFreeSpaceInOutsideVehicleAcceptor(this.getCurrentRoad().getNextSeg(this));
-				System.out.println("FIRST CAR IN road(l=" + this.getCurrentRoad().getLength() + ") " + this + " return " + (this.getCurrentRoad().getLength() - this.getPosition()) + " " + d);
+				//System.out.println("FIRST CAR IN road(l=" + this.getCurrentRoad().getLength() + ") " + this + " return " + (this.getCurrentRoad().getLength() - this.getPosition()) + " " + d + " " + cars);
 				return (this.getCurrentRoad().getLength() - this.getPosition()) + d;
 			}
 			//get a set of all elements which are greater than or equal to this object
-			SortedSet<Vehicle> frontCars = cars.tailSet(this);
-			if(frontCars.size() > 1) {
-				Vehicle v = (Vehicle)frontCars.toArray()[0];
-				System.out.println("V is next car " + v + " to " + this);
+			SortedSet<Vehicle> frontCars = cars.headSet(this);
+			//System.out.println("Front Cars(" + frontCars.size() + ") in road(" + this.getCurrentRoad().hashCode() + " w/ length: " + this.getCurrentRoad().getLength() + "): " + frontCars + " vs " + cars + " " + this);
+			if(frontCars.size() > 0 && !this.equals(frontCars.last())) {
+				Vehicle v = frontCars.last();
+				//System.out.println("V is next car " + v + " to " + this);
+				//System.out.println("FCS: " + frontCars);
 				return v.getBackPosition() - this.getPosition();
 			} else {
-				System.out.println("ELSE " + (this.getCurrentRoad().getLength() - this.getPosition()) + " to " + this + " FIRST " + frontCars.first());
+				//System.out.println("ELSE " + (this.getCurrentRoad().getLength() - this.getPosition()) + " to " + this);
 				return this.getCurrentRoad().getLength() - this.getPosition();
 			}
 	  		
@@ -148,9 +156,9 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 	  		
 	  		//calculate velocity
 	  		double velocity = (_velocity / (_brakeDistance - _stopDistance)) * (freeSpace - _stopDistance);
-	  		System.out.println("V1 = " + velocity);
+	  		//System.out.println("V1 = " + velocity);
 	  		velocity = Math.max(0, velocity);
-	  		System.out.println("V2 = " + velocity);
+	  		//System.out.println("V2 = " + velocity);
 	  		velocity = Math.min(_velocity, velocity);
 	  		double step = (velocity * MP.simulationTimeStep);
 	  		double nextPos = this.getPosition() + step;
@@ -159,7 +167,7 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 	  		if (nextPos > this.getCurrentRoad().getLength())  {
 	  			//send to the next segment and request the appropriate space.
 	  			if (sendCarToNextSeg(nextPos - this.getCurrentRoad().getLength())) {
-		    		  System.out.println("Sent car to next seg " + this + " NP " + nextPos + " " + (nextPos - this.getCurrentRoad().getLength()));
+		    		  //System.out.println("Sent car to next seg " + this + " NP " + nextPos + " " + (nextPos - this.getCurrentRoad().getLength()));
 		    		  //_ts.enqueue(MP.simulationTimeStep + _ts.currentTime(), this);
 		    		  return;
 		    	} else {
@@ -169,26 +177,29 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 		    	}
 	  		}
 	  		
-	  		System.out.println("C: " + this + " nextPos " + nextPos + " step " + Math.round(step) + " velocity = " + velocity + " fs: " + freeSpace + " rL = " + this.getCurrentRoad().getLength() + " VAL = " + (velocity * MP.simulationTimeStep));
-
+	  		//System.out.println("C: " + this + " nextPos " + nextPos + " step " + Math.round(step) + " velocity = " + velocity + " fs: " + freeSpace + " rL = " + this.getCurrentRoad().getLength() + " VAL = " + (velocity * MP.simulationTimeStep));
+	  		if (nextPos == this.getPosition()) {
+	  			//System.out.println("Car stopped: " + this + " " + nextPos + " in road " + this.getCurrentRoad());
+	  		}
 	  		this.setPosition(nextPos);
 	  		
 	  	}
 	@Override
 	public void run() {
+		//System.out.println(this + " is running!");
 		if (this.isDisposed()) {
 			//object is disposed, don't do anything with it!
 			return;
 		}
 			if (this.getCurrentRoad().getClass() == Intersection.class) {
-				System.out.println(this + " is inside the intersection!");
+				//System.out.println(this + " is inside the intersection! " + ((Intersection)this.getCurrentRoad()).key);
 			}
 		//call moveTo and pass the maximum possible move for this car	
 		 this.moveTo(_velocity * MP.simulationTimeStep);
 	    //System.out.println("(" + _ts.currentTime() + ")Running Car: " + this.toString() + " free: " + free + " velocity " + _velocity + " new postion " + _position);
 		//re-enque the vehicle to wake up again at the next simulation timestep
 		_ts.enqueue(MP.simulationTimeStep + _ts.currentTime(), this);
-		//System.out.println("Enqued car for wakeup at" + (_ts.currentTime() + MP.simulationTimeStep));
+		//System.out.println("Enqued car(" + this.hashCode() + ") for wakeup at" + (_ts.currentTime() + MP.simulationTimeStep));
 	}
 
 	@Override
@@ -230,7 +241,7 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 			  //now make sure there is space for it and that is will accept it
 			  //System.out.println("Next " + next.getClass() + " " + this);
 			  if (!isSpaceForCar(next) || !next.accept(this)) {
-				  System.out.println("Rejected by " + next.getClass() + " " + this + " Driveable? " + next.isDriveable(this));
+				  //System.out.println("Rejected by " + next.getClass() + " " + this + " Driveable? " + next.isDriveable(this) + " CARS: " + next.getCars());
 				  return false;
 			  }
 			  //its been accepted, remove from the current road
@@ -281,7 +292,7 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 			return (t < (this.getPosition()  - this.getCurrentRoad().getLength())) ? t : (this.getPosition()   - this.getCurrentRoad().getLength()) ;
 		}
 		if (velocity != t) {
-			System.out.println("Returning velcotry of " + velocity + " compared to t: " + t + " ON " + this.getCurrentRoad().getCars());
+			//System.out.println("Returning velcotry of " + velocity + " compared to t: " + t + " ON " + this.getCurrentRoad().getCars());
 			
 		}
 		//return the opening
@@ -427,7 +438,7 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 	public int compareTo(Vehicle v) {
 		if (v.getPosition() > this.getPosition()) {
 			return 1;
-		} else if (this.getPosition() < v.getPosition()) {
+		} else if (v.getPosition() < this.getPosition() ) {
 			return -1;
 		} else {
 			return 0;

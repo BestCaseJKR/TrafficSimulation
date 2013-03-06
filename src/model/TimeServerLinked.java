@@ -82,16 +82,16 @@ public final class TimeServerLinked extends Observable implements TimeServer {
   public void run(double duration) {
     double endtime = _currentTime + duration;
     while ((!empty()) && (_head.next.waketime <= endtime)) {
-      if ((_currentTime - _head.next.waketime) > 1e-09) {
+      if ((_head.next.waketime - _currentTime) <= 1e-05) {
         super.setChanged();
         super.notifyObservers();
       }
+      System.out.println("Time is now " + _currentTime + " vs " + _head.next.waketime + " " + (_currentTime - _head.next.waketime));
       _currentTime = _head.next.waketime;
-      //System.out.println("Time is now " + _currentTime);
-      Agent a = dequeue();
-      a.run();
-      super.setChanged();
-      super.notifyObservers();
+      
+      dequeue().run();
+      //super.setChanged();
+      //super.notifyObservers();
     }
     _currentTime = endtime;
   }

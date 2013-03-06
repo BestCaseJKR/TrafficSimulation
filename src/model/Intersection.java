@@ -11,6 +11,8 @@ public class Intersection implements VehicleAcceptor {
 	
 	Intersection() { System.out.println(this);  }
 	
+	public String key;
+	
 	private VehicleAcceptor _nsRoad;
 	public VehicleAcceptor getNSRoad() {
 		return _nsRoad;
@@ -56,13 +58,18 @@ public class Intersection implements VehicleAcceptor {
 	    if (!isDriveable(d))  {
 	    	return false;
 	    }
-	    System.out.println("Intersection has car " + d);
+	    //System.out.println("Intersection has car " + d);
+
 	    _cars.add(d);
 	    return true;
 	}
 	@Override
 	public void remove(Vehicle d) {
-		_cars.remove(d);
+		//if cars isnt empty...
+		if (!_cars.remove(d)) {
+			System.out.println("Couldnt Remove " + d + " from " + this);
+		}
+		//System.out.println("Removed " + d + " from " + this);
 	}
 	
 	  public void setNextSeg(VehicleAcceptor next) {
@@ -95,7 +102,7 @@ public class Intersection implements VehicleAcceptor {
 	}
 
 	public String toString() {
-		return "Intersection: L: " + this.getLength() + " with cars " + this.getCars();
+		return "Intersection(Key=" + this.key + "): L: " + this.getLength() + " with cars " + this.getCars();
 	}
 	
 }

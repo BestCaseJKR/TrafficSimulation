@@ -70,11 +70,9 @@ public final class TimeServerQueue extends Observable implements TimeServer {
       }
       double lastTime = _currentTime;
       _currentTime = _queue.peek().waketime;
-      System.out.println("Time is now " + _currentTime + " was " + lastTime);
-      Agent a = dequeue();
-      a.run();
-      super.setChanged();
-      super.notifyObservers();
+      dequeue().run();
+      //super.setChanged();
+      //super.notifyObservers();
     }
     _currentTime = endtime;
   }
