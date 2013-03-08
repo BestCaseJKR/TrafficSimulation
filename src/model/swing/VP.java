@@ -16,7 +16,7 @@ class VP {
   /** Height of the displayed graphics window, in pixels */
   static int displayHeight = 1000;
   /** Delay introduced into each graphics update, in milliseconds */
-  static int displayDelay = 3;
+  static int displayDelay = 5;
   /** Scalefactor relating model space to pixels, in pixels/meter */
   static double scaleFactor = 1;
 }

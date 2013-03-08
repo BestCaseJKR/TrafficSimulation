@@ -41,7 +41,21 @@ public final class PopupUI implements UI {
   }
 
   public String[] processForm(UIForm form) {
-    // TODO
-    return null;
+		String[] result = new String[form.size()];
+		
+		for(int i = 0; i < form.size(); i++) {
+		    String response = JOptionPane.showInputDialog(form.getPrompt(i));
+		    if (response == null) {
+		      response = "";
+		    }
+		    if(form.checkInput(i, response)) {
+		    	result[i] = response;
+		    } else {
+		    	
+		    	this.displayError("The input: " + result + " was invalid. Restarting form...");
+		    	return this.processForm(form);
+		    }
+		}
+	    return result;
   }
 }

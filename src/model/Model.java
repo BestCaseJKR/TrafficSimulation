@@ -29,7 +29,7 @@ public class Model extends Observable implements Observer {
     _ts = t;
     _ts.addObserver(this);
     
-    setup(builder, t, 2, 3);
+    setup(builder, t, MP.grid.rows, MP.grid.columns);
     _animator = builder.getAnimator();
     super.addObserver(_animator);
 
@@ -81,29 +81,44 @@ public class Model extends Observable implements Observer {
 	        l.setOrientation(VehicleOrientation.East_West);
 	        builder.addHorizontalRoad(l, i, j, eastToWest);
 	        roads.add(l);
-	        if ((j == 0 && eastToWest == false) || (j == columns && eastToWest )) {
-	        	//if this is a brand new road being created, create a source too
-	        	Source s = new Source(l, ts);
-	        	//also add it to the agents array because its an agent
+	        
+	        if (MP.simulationTrafficPatter == TrafficPattern.Simple) {
+	        	if (j == 0) {
+	        		//if this is a brand new road being created, create a source too
+		        	Source s = new Source(l, ts);
+	        	}
+	        	if (j == columns) {
+	        		Sink sink = new Sink(ts);
+		        	l.setNextSeg(sink);
+	        	}
+	        } else {
+	        	if ((j == 0 && eastToWest == false ) || (j == columns && eastToWest)) {
+	        		//if this is a brand new road being created, create a source too
+		        	Source s = new Source(l, ts);
+	        	}
+	        	if ((j == columns && eastToWest == false) || (j == 0 && eastToWest)) {
+	        		Sink sink = new Sink(ts);
+		        	l.setNextSeg(sink);
+	        	}
+	        	
+	        	
 	        }
-	        if ((j == columns && eastToWest == false) || (j == 0 && eastToWest)) {
-	        	Sink sink = new Sink(ts);
-	        	l.setNextSeg(sink);
-	        }
+	        
+	       
 	        if (j == 0) {
-	        	if(eastToWest) {
+	        	if(MP.simulationTrafficPatter == TrafficPattern.Alternating && eastToWest) {
 	        		intersections[i][j].setEWRoad(l);
 	        	} else {
 	        		l.setNextSeg(intersections[i][j]);
 	        	}
 	        } else if (j == columns) {
-	        	if(eastToWest) {
+	        	if(MP.simulationTrafficPatter == TrafficPattern.Alternating && eastToWest) {
 	        		l.setNextSeg(intersections[i][j-1]);
 	        	} else {
 	        		intersections[i][j-1].setEWRoad(l);
 	        	}
 	        } else {
-	        	if(eastToWest) {
+	        	if(MP.simulationTrafficPatter == TrafficPattern.Alternating && eastToWest) {
 	        		intersections[i][j].setEWRoad(l);
 	        		l.setNextSeg(intersections[i][j-1]);
 	        	} else {
@@ -129,30 +144,42 @@ public class Model extends Observable implements Observer {
 	        l.setOrientation(VehicleOrientation.North_South);
 	        builder.addVerticalRoad(l, i, j, southToNorth);
 	        roads.add(l);
-	        if ((i == 0 && southToNorth == false) || (i == rows && southToNorth )) {
-	        	//if this is a brand new road being created, create a source too
-	        	Source source = new Source(l, ts);
-	        	//also add it to the agents array because its an agent
-	        	//_agents.add(source);
+	        if (MP.simulationTrafficPatter == TrafficPattern.Simple) {
+	        	if (i == 0) {
+	        		//if this is a brand new road being created, create a source too
+		        	Source s = new Source(l, ts);
+	        	}
+	        	if (i == columns) {
+	        		Sink sink = new Sink(ts);
+		        	l.setNextSeg(sink);
+	        	}
+	        } else {
+	        	if ((i == 0 && southToNorth == false ) || (i == rows && southToNorth)) {
+	        		//if this is a brand new road being created, create a source too
+		        	Source s = new Source(l, ts);
+	        	}
+	        	if ((i == rows && southToNorth == false) || (i == 0 && southToNorth)) {
+	        		Sink sink = new Sink(ts);
+		        	l.setNextSeg(sink);
+	        	}
+	        	
+	        	
 	        }
-	        if ((i == rows && southToNorth == false) || (i == 0 && southToNorth)) {
-	        	Sink sink = new Sink(ts);
-	        	l.setNextSeg(sink);
-	        }
+	        
 	        if (i == 0) {
-	        	if(southToNorth) {
+	        	if(MP.simulationTrafficPatter == TrafficPattern.Alternating && southToNorth) {
 	        		intersections[i][j].setNSRoad(l);
 	        	} else {
 	        		l.setNextSeg(intersections[i][j]);
 	        	}
 	        } else if (i == rows) {
-	        	if(southToNorth) {
+	        	if(MP.simulationTrafficPatter == TrafficPattern.Alternating && southToNorth) {
 	        		l.setNextSeg(intersections[i-1][j]);
 	        	} else {
 	        		intersections[i-1][j].setNSRoad(l);
 	        	}
 	        } else {
-	        	if(southToNorth) {
+	        	if(MP.simulationTrafficPatter == TrafficPattern.Alternating && southToNorth) {
 	        		intersections[i][j].setNSRoad(l);
 	        		l.setNextSeg(intersections[i-1][j]);
 	        	} else {

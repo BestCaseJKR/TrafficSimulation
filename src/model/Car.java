@@ -149,7 +149,7 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 	  	 * Move the car to, at the most, the requested position
 	  	 * @param toPosition
 	  	 */
-	  	private void moveTo(double toPosition) {
+	  	public void moveTo(double toPosition) {
 	  		//get the free space in front of us on this road
 	  		double freeSpace = checkFreeSpaceAhead();
 
@@ -186,7 +186,7 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 	  	}
 	@Override
 	public void run() {
-		//System.out.println(this + " is running!");
+		//System.out.println(this + " is running! at " + _ts.currentTime());
 		if (this.isDisposed()) {
 			//object is disposed, don't do anything with it!
 			return;
@@ -223,6 +223,11 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 	}
 
 	@Override
+	public double getBrakeDistance() {
+		return _brakeDistance;
+	}
+	
+	@Override
 	public Color getColor() {
 		return _color;
 	}
@@ -253,52 +258,6 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 		  }   
 		return false;
 	}
-	/**
-	 * Request Move works for only the current road! I.e. this will not
-	 * send a vehicle to its next road if the length is exceeded!
-	 */
-	@Override
-	public double requestMove(double requestedMove) {
-		//first test to see if the current postion and the request exceed the length of the road
-		if ((this.getPosition() + requestedMove) > this.getCurrentRoad().getLength()) {
-			//if so, set requestedMove to be the maximum length of the road.
-			requestedMove = this.getCurrentRoad().getLength() - this.getPosition();
-			
-		}
-		//now calculate the open space in front of us
-		double opening = calculateOpenSpace(requestedMove);
-		double velocity = opening;
-		//now calculate the velocity
-		
-		double t = (_velocity / (_brakeDistance - _stopDistance)) * (opening - _stopDistance);
-		t = Math.max(0.0, t);
-		t = Math.min(velocity, t);
-		
-	/*	if (opening <= _stopDistance) {
-			System.out.println("STOP DISTANCE " + velocity + " SD " + _stopDistance);
-			velocity = _stopDistance;
-		} else if (opening <= _brakeDistance) {
-			System.out.println("BREAK DISTANCE " + velocity + " BD " + _brakeDistance);
-			velocity = opening/2;
-		} else {
-			System.out.println("PAST BREAK DISTANCE " + velocity);
-			velocity = opening;
-		}
-	*/	 
-		//now if the new position+rquest exceed the road length..
-		if ((this.getPosition() + t) > this.getCurrentRoad().getLength()) {
-			//return whatever is smaller, the open space or the max length of the road
-			//TODO: This can be improved. Can probably return requested move?
-			return (t < (this.getPosition()  - this.getCurrentRoad().getLength())) ? t : (this.getPosition()   - this.getCurrentRoad().getLength()) ;
-		}
-		if (velocity != t) {
-			//System.out.println("Returning velcotry of " + velocity + " compared to t: " + t + " ON " + this.getCurrentRoad().getCars());
-			
-		}
-		//return the opening
-		return velocity; 
-	}
-
 	@Override
 	public boolean isSpaceForCar(VehicleAcceptor r) {
 		SortedSet<Vehicle> cars = r.getCars();
@@ -313,123 +272,7 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 		}
 		return true;
 	}
-	
-	/**
-	 * calculate the open space of the current road up to toPosition.
-	 * If no vehicles occupy the space from this.getPosition() to toPostion,
-	 * toPosition is returned and the vehicle is free to move to this space
-	 * @param toPosition
-	 * @return
-	 */
-	private double calculateOpenSpace(double toPosition) {
-		//get a copy of all the vehicles in the VehicleAccpetor object
-		SortedSet<Vehicle> cars = this.getCurrentRoad().getCars();
-		//set pos to a base value, -1 in this car
-		double pos = -1;
-		//if no cars are found, return pos
-		if (cars == null) {
-			return pos;
-		}
-		
-		//for each car...
-		for	(Vehicle checkCar: cars) {
-			//make sure that we arent checking ourself
-			//then check to see if the car's back position would get in the way
-			//and that the object isn't behind us to being with
-			if (!this.equals(checkCar) &&
-					checkCar.getBackPosition() <= (this.getPosition() + toPosition) && 
-					checkCar.getBackPosition() >= this.getBackPosition()	
-			) {
-				//this object is in our way. store the next free block
-				double tmpPos = checkCar.getBackPosition() - getPosition();
-				//System.out.println("OBJECT IN WAY " + checkCar);
-				if(tmpPos >= 0) {
-					//assuming the free block is >= 0, we set tmpPos with its value the first time we receive one
-					//pos will store the lowest value(thus the next free block) here
-					if (pos == -1) {
-						pos = tmpPos;
-					}
-				}
-				//now test tmpPos and pos, take the smaller value.
-				pos = (tmpPos < pos) ? tmpPos : pos;
-			} else  {
-				//if (!this.equals(checkCar)) System.out.println("NOT IN MY(" + this + " " + this.getPosition() + " r=" + toPosition + ") WAY " + checkCar + " " + checkCar.getBackPosition());
-				
-			}
-		}
-		//if pos has been set to something, return it
-		if (pos != -1) {
-			//System.out.println("RM: " + toPosition + " Return: " + pos);
-			return pos;
-		}
-		//testing for a bug. TODO: Remove test
-		if (pos < 0 && pos != -1) {
-			System.out.println("WTF " + pos);
-			System.exit(1);
-		}
-		//System.out.println("toPosition " + toPosition);
-		//if this is hit, we know that pos was never set. the road should be open
-		return toPosition;
-	}
-	
-	/**
-	 * calculate the open space of the current road in front of this car
-	 * If no vehicles occupy the space from this.getPosition() to toPostion,
-	 * toPosition is returned and the vehicle is free to move to this space
-	 * @param toPosition
-	 * @return
-	 */
-	private double calculateOpenSpace() {
-		//get a copy of all the vehicles in the VehicleAccpetor object
-		SortedSet<Vehicle> cars = this.getCurrentRoad().getCars();
-		//set pos to a base value, -1 in this car
-		double pos = -1;
-		//if no cars are found, return pos
-		if (cars == null) {
-			return pos;
-		}
-		
-		//for each car...
-		for	(Vehicle checkCar: cars) {
-			//make sure that we arent checking ourself
-			//then check to see if the car's back position would get in the way
-			//and that the object isn't behind us to being with
-			if (!this.equals(checkCar) &&
-					//checkCar.getBackPosition() <= this.getPosition()  && 
-					checkCar.getPosition() >= this.getPosition()	
-			) {
-				//this object is in our way. store the next free block
-				double tmpPos = checkCar.getBackPosition() - getPosition();
-				//System.out.println("OBJECT IN WAY " + checkCar);
-				if(tmpPos >= 0) {
-					//assuming the free block is >= 0, we set tmpPos with its value the first time we receive one
-					//pos will store the lowest value(thus the next free block) here
-					if (pos == -1) {
-						pos = tmpPos;
-					}
-				}
-				//now test tmpPos and pos, take the smaller value.
-				pos = (tmpPos < pos) ? tmpPos : pos;
-			} else  {
-				//if (!this.equals(checkCar)) System.out.println("NOT IN MY(" + this + " " + this.getPosition() + " r=" + toPosition + ") WAY " + checkCar + " " + checkCar.getBackPosition());
-				
-			}
-		}
-		//if pos has been set to something, return it
-		if (pos != -1) {
-			//System.out.println("RM: " + toPosition + " Return: " + pos);
-			return pos;
-		}
-		//testing for a bug. TODO: Remove test
-		if (pos < 0 && pos != -1) {
-			System.out.println("WTF " + pos);
-			System.exit(1);
-		}
-		//System.out.println("toPosition " + toPosition);
-		//if this is hit, we know that pos was never set. the road should be open
-		return this.getCurrentRoad().getLength() - this.getPosition();
-	}
-	
+
 	public String toString() {
 		return "Car(" + this.hashCode() + ") P=" + this.getPosition() + " V=" + _velocity;
 	}

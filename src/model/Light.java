@@ -25,7 +25,6 @@ public class Light implements Agent {
 	public void run() {
 		_state = _state.getNext();
 		_ts.enqueue(_ts.currentTime() + getState().getDuration(), this);
-		System.out.println("RUN LIGHT " + this + "  Light Change = " + (_ts.currentTime() + getState().getDuration()));
 	}
 
 }

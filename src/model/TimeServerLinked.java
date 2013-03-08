@@ -15,6 +15,7 @@ public final class TimeServerLinked extends Observable implements TimeServer {
     }
   }
   private double _currentTime;
+  private double _lastUpdate;
   private int _size;
   private Node _head;
 
@@ -82,11 +83,16 @@ public final class TimeServerLinked extends Observable implements TimeServer {
   public void run(double duration) {
     double endtime = _currentTime + duration;
     while ((!empty()) && (_head.next.waketime <= endtime)) {
-      if ((_head.next.waketime - _currentTime) <= 1e-05) {
+//      if ((_head.next.waketime - _currentTime) <= 1e-05) {
+//        super.setChanged();
+//        super.notifyObservers();
+//      }
+    if ((_currentTime - _lastUpdate) > (MP.simulationTimeStep * .1)) {
+    	_lastUpdate = _currentTime;
         super.setChanged();
         super.notifyObservers();
       }
-      System.out.println("Time is now " + _currentTime + " vs " + _head.next.waketime + " " + (_currentTime - _head.next.waketime));
+      //System.out.println("Time is now " + _currentTime + " vs " + _head.next.waketime + " " + (_currentTime - _head.next.waketime) + " LU: " + _lastUpdate);
       _currentTime = _head.next.waketime;
       
       dequeue().run();

@@ -23,6 +23,11 @@ public interface Vehicle extends Disposable {
 	 */
 	public double getLength();
 	/**
+	 * Get the braking distance of the current object
+	 * @return
+	 */
+	public double getBrakeDistance();
+	/**
 	 * Return the position of the back of the vehicle, the bumper if you will.
 	 * @return
 	 */
@@ -48,7 +53,7 @@ public interface Vehicle extends Disposable {
 	 * @param requestedMove
 	 * @return
 	 */
-	public double requestMove(double requestedMove);
+	public void moveTo(double requestedMove);
 	/**
 	 * check the VehicleAcceptor object and see if it could currently accept the vehicle
 	 * @param r

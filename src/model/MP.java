@@ -1,6 +1,5 @@
 package model;
 
-import java.util.Random;
 
 /**
  * Static class for model parameters.
