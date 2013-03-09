@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import model.AnimatorBuilder;
-import model.Intersection;
-import model.Vehicle;
-import model.Light;
-import model.LightState;
 import model.MP;
-import model.VehicleAcceptor;
+import model.Vehicle.Vehicle;
+import model.VehicleAcceptor.Intersection;
+import model.VehicleAcceptor.Light;
+import model.VehicleAcceptor.LightState;
+import model.VehicleAcceptor.VehicleAcceptor;
 import util.Animator;
 
 /** 

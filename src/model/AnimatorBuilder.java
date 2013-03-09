@@ -1,5 +1,8 @@
 package model;
 
+import model.VehicleAcceptor.Intersection;
+import model.VehicleAcceptor.Light;
+import model.VehicleAcceptor.VehicleAcceptor;
 import util.Animator;
 
 /** 

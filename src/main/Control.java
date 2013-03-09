@@ -1,11 +1,10 @@
 package main;
 
-import model.MP;
 import model.Model;
-import model.TimeServer;
-import model.TimeServerLinked;
-import model.TimeServerQueue;
+import model.MP;
 import model.TrafficPattern;
+import model.Agent.TimeServer;
+import model.Agent.TimeServerLinked;
 import model.swing.SwingAnimatorBuilder;
 import ui.UIError;
 import ui.PopupUI;
@@ -149,7 +148,7 @@ public class Control {
 							sb.append("\n");
 							sb.append("Car Break Distance:" + MP.breakDistance);
 							sb.append("\n");
-							sb.append("Yellow Light Times:" + MP.trafficLightYellowTime);
+							sb.append("Yellow Light Time:" + MP.trafficLightYellowTime);
 							sb.append("\n");
 							sb.append("Green Light Time:" + MP.trafficLightGreenTime);
 							sb.append("\n");
@@ -201,7 +200,103 @@ public class Control {
 								}
 							}	
 						});
-					
+
+					paramsMenu.add("Car Entry Rate", new UIMenuAction() {
+						public void run() {	
+							UIFormBuilder f = new UIFormBuilder();
+							f.add("Min Value=" + MP.carEntryRate.getMin() + "\n: " , _doubleTest);
+							f.add("Max Value=" + MP.carEntryRate.getMax() + "\n: " , _doubleTest);
+							String[] res = _ui.processForm(f.toUIForm("Car Entry Rate"));
+							MP.carEntryRate.setMin(Integer.parseInt(res[0]));
+							MP.carEntryRate.setMax(Integer.parseInt(res[1]));
+							}
+						});
+					paramsMenu.add("Road Length", new UIMenuAction() {
+						public void run() {	
+							UIFormBuilder f = new UIFormBuilder();
+							f.add("Min Value=" + MP.roadSegmentLength.getMin() + "\n: " , _doubleTest);
+							f.add("Max Value=" + MP.roadSegmentLength.getMax() + "\n: " , _doubleTest);
+							String[] res = _ui.processForm(f.toUIForm("Road Length"));
+							MP.roadSegmentLength.setMin(Integer.parseInt(res[0]));
+							MP.roadSegmentLength.setMax(Integer.parseInt(res[1]));
+							}
+						});					
+					paramsMenu.add("Intersection Length", new UIMenuAction() {
+						public void run() {	
+							UIFormBuilder f = new UIFormBuilder();
+							f.add("Min Value=" + MP.intersectionLength.getMin() + "\n: " , _doubleTest);
+							f.add("Max Value=" + MP.intersectionLength.getMax() + "\n: " , _doubleTest);
+							String[] res = _ui.processForm(f.toUIForm("Intersection Length"));
+							MP.intersectionLength.setMin(Integer.parseInt(res[0]));
+							MP.intersectionLength.setMax(Integer.parseInt(res[1]));
+							}
+						});	
+					paramsMenu.add("Car Length", new UIMenuAction() {
+						public void run() {	
+							UIFormBuilder f = new UIFormBuilder();
+							f.add("Min Value=" + MP.carLength.getMin() + "\n: " , _doubleTest);
+							f.add("Max Value=" + MP.carLength.getMax() + "\n: " , _doubleTest);
+							String[] res = _ui.processForm(f.toUIForm("Car Length"));
+							MP.carLength.setMin(Integer.parseInt(res[0]));
+							MP.carLength.setMax(Integer.parseInt(res[1]));
+							}
+						});
+					paramsMenu.add("Max Car Velocity", new UIMenuAction() {
+						public void run() {	
+							UIFormBuilder f = new UIFormBuilder();
+							f.add("Min Value=" + MP.maxVelocity.getMin() + "\n: " , _doubleTest);
+							f.add("Max Value=" + MP.maxVelocity.getMax() + "\n: " , _doubleTest);
+							String[] res = _ui.processForm(f.toUIForm("Max Car Velocity"));
+							MP.maxVelocity.setMin(Integer.parseInt(res[0]));
+							MP.maxVelocity.setMax(Integer.parseInt(res[1]));
+							}
+						});
+					paramsMenu.add("Car Stop Distance", new UIMenuAction() {
+						public void run() {	
+							UIFormBuilder f = new UIFormBuilder();
+							f.add("Min Value=" + MP.carStopDistance.getMin() + "\n: " , _doubleTest);
+							f.add("Max Value=" + MP.carStopDistance.getMax() + "\n: " , _doubleTest);
+							String[] res = _ui.processForm(f.toUIForm("Car Stop Distance:"));
+							MP.carStopDistance.setMin(Integer.parseInt(res[0]));
+							MP.carStopDistance.setMax(Integer.parseInt(res[1]));
+							}
+						});
+					paramsMenu.add("Car Break Distance", new UIMenuAction() {
+						public void run() {	
+							UIFormBuilder f = new UIFormBuilder();
+							f.add("Min Value=" + MP.breakDistance.getMin() + "\n: " , _doubleTest);
+							f.add("Max Value=" + MP.breakDistance.getMax() + "\n: " , _doubleTest);
+							String[] res = _ui.processForm(f.toUIForm("Car Break Distance:"));
+							MP.breakDistance.setMin(Integer.parseInt(res[0]));
+							MP.breakDistance.setMax(Integer.parseInt(res[1]));
+							}
+						});
+					paramsMenu.add("Yellow Light Time", new UIMenuAction() {
+						public void run() {	
+							UIFormBuilder f = new UIFormBuilder();
+							f.add("Min Value=" + MP.trafficLightYellowTime.getMin() + "\n: " , _doubleTest);
+							f.add("Max Value=" + MP.trafficLightYellowTime.getMax() + "\n: " , _doubleTest);
+							String[] res = _ui.processForm(f.toUIForm("Yellow Light Time:"));
+							MP.trafficLightYellowTime.setMin(Integer.parseInt(res[0]));
+							MP.trafficLightYellowTime.setMax(Integer.parseInt(res[1]));
+							}
+						});
+					paramsMenu.add("Green Light Time", new UIMenuAction() {
+						public void run() {	
+							UIFormBuilder f = new UIFormBuilder();
+							f.add("Min Value=" + MP.trafficLightGreenTime.getMin() + "\n: " , _doubleTest);
+							f.add("Max Value=" + MP.trafficLightGreenTime.getMax() + "\n: " , _doubleTest);
+							String[] res = _ui.processForm(f.toUIForm("Green Light Time:"));
+							MP.trafficLightGreenTime.setMin(Integer.parseInt(res[0]));
+							MP.trafficLightGreenTime.setMax(Integer.parseInt(res[1]));
+							}
+						});
+					paramsMenu.add("Reset Parameters to Default And Return to Main Menu", new UIMenuAction() {
+						public void run() {	
+							MP.setDefaults();
+							_state = ControlState.START; 
+							}
+						});
 					paramsMenu.add("Return to Main Menu", new UIMenuAction() {
 						public void run() {	_state = ControlState.START; }	
 						});
@@ -257,6 +352,7 @@ public class Control {
 		      };
 	    
 	  
+		      
 	  private static UI _ui = UIFactory.ui();
 	  
 	  void run() {

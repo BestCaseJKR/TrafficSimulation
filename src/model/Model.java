@@ -5,6 +5,20 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import model.Agent.Agent;
+import model.Agent.Source;
+import model.Agent.TimeServer;
+import model.Agent.TimeServerLinked;
+import model.Vehicle.Car;
+import model.Vehicle.VehicleOrientation;
+import model.VehicleAcceptor.Intersection;
+import model.VehicleAcceptor.Light;
+import model.VehicleAcceptor.Road;
+import model.VehicleAcceptor.Sink;
+import model.VehicleAcceptor.VehicleAcceptor;
+import model.VehicleAcceptor.VehicleAcceptorBuilder;
+import model.VehicleAcceptor.VehicleAcceptorFactory;
+
 import util.Animator;
 
 /**
@@ -61,7 +75,7 @@ public class Model extends Observable implements Observer {
 	    for (int i=0; i<rows; i++) {
 	      for (int j=0; j<columns; j++) {
 	    	li = new Light(_ts);
-	        intersections[i][j] = new Intersection();
+	        intersections[i][j] = (Intersection)VehicleAcceptorBuilder.newIntersection();
 	        intersections[i][j].setLight(li);
 	        intersections[i][j].key = "I =" + i + " J=" + j;
 	        //builder.addLight(li, i, j);
@@ -79,25 +93,30 @@ public class Model extends Observable implements Observer {
 	        Road l = new Road();
 	        //l.setOrientation(((eastToWest)? RoadOrientation.East_West: RoadOrientation.West_East ));
 	        l.setOrientation(VehicleOrientation.East_West);
-	        builder.addHorizontalRoad(l, i, j, eastToWest);
 	        roads.add(l);
 	        
 	        if (MP.simulationTrafficPatter == TrafficPattern.Simple) {
+	        	
+	        	builder.addHorizontalRoad(l, i, j, false);
+	        	
 	        	if (j == 0) {
 	        		//if this is a brand new road being created, create a source too
 		        	Source s = new Source(l, ts);
 	        	}
 	        	if (j == columns) {
-	        		Sink sink = new Sink(ts);
+	        		Sink sink = (Sink)VehicleAcceptorFactory.generateSink(ts);
 		        	l.setNextSeg(sink);
 	        	}
 	        } else {
+	        	
+	        	builder.addHorizontalRoad(l, i, j, eastToWest);
+	        	
 	        	if ((j == 0 && eastToWest == false ) || (j == columns && eastToWest)) {
 	        		//if this is a brand new road being created, create a source too
 		        	Source s = new Source(l, ts);
 	        	}
 	        	if ((j == columns && eastToWest == false) || (j == 0 && eastToWest)) {
-	        		Sink sink = new Sink(ts);
+	        		Sink sink = (Sink)VehicleAcceptorFactory.generateSink(ts);
 		        	l.setNextSeg(sink);
 	        	}
 	        	
@@ -142,18 +161,20 @@ public class Model extends Observable implements Observer {
 	    	  Road l = new Road();
 	        //l.setOrientation(((southToNorth)? RoadOrientation.South_North: RoadOrientation.North_South ));
 	        l.setOrientation(VehicleOrientation.North_South);
-	        builder.addVerticalRoad(l, i, j, southToNorth);
+	        
 	        roads.add(l);
 	        if (MP.simulationTrafficPatter == TrafficPattern.Simple) {
+	        	builder.addVerticalRoad(l, i, j, false);
 	        	if (i == 0) {
 	        		//if this is a brand new road being created, create a source too
 		        	Source s = new Source(l, ts);
 	        	}
-	        	if (i == columns) {
+	        	if (i == rows) {
 	        		Sink sink = new Sink(ts);
 		        	l.setNextSeg(sink);
 	        	}
 	        } else {
+	        	builder.addVerticalRoad(l, i, j, southToNorth);
 	        	if ((i == 0 && southToNorth == false ) || (i == rows && southToNorth)) {
 	        		//if this is a brand new road being created, create a source too
 		        	Source s = new Source(l, ts);

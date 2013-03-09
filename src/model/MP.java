@@ -7,22 +7,47 @@ package model;
 public class MP {
   private MP() {}
   
-  public static double simulationTimeStep = .1;
-  public static double simulationRunTime = 1000.0;
-  public static GridDimensions grid = new GridDimensions(2,3);
-  public static TrafficPattern simulationTrafficPatter = TrafficPattern.Alternating;
-  public static Range carEntryRate = new Range(2, 25);
-  public static Range roadSegmentLength = new Range(200,500);
-  public static Range intersectionLength = new Range(10,15);
-  public static Range carLength = new Range(5,10);
+  static {
+	  setDefaults();
+  }
+  
+  public static void setDefaults() {
+	  simulationTimeStep = .1;
+	  simulationRunTime = 1000.0;
+	  grid = new GridDimensions(2,3);
+	  simulationTrafficPatter = TrafficPattern.Alternating;
+	  carEntryRate = new Range(2, 25);
+	  roadSegmentLength = new Range(200,500);
+	  intersectionLength = new Range(10,15);
+	  carLength = new Range(5,10);
+	  /** Maximum car velocity, in meters/second */
+	  maxVelocity = new Range(10, 30);
+	  breakDistance = new Range(9, 10);
+	  stopDistance = new Range(0.5,5);
+	  carStopDistance = new Range(0.5,5);
+	  trafficLightGreenTime = new Range(10,20);
+	  trafficLightYellowTime = new Range(4,5);
+	  sourceGenerationDelay = new Range(10,15);
+	 
+  }
+  
+  
+  public static double simulationTimeStep;
+  public static double simulationRunTime;
+  public static GridDimensions grid;
+  public static TrafficPattern simulationTrafficPatter;
+  public static Range carEntryRate;
+  public static Range roadSegmentLength;
+  public static Range intersectionLength;
+  public static Range carLength;
   /** Maximum car velocity, in meters/second */
-  public static Range maxVelocity = new Range(10, 30);
-  public static Range breakDistance = new Range(9, 10);
-  public static Range stopDistance = new Range(0.5,5);
-  public static Range carStopDistance = new Range(0.5,5);
-  public static Range trafficLightGreenTime = new Range(10,20);
-  public static Range trafficLightYellowTime = new Range(4,5);
-  public static Range sourceGenerationDelay = new Range(10,15);
+  public static Range maxVelocity;
+  public static Range breakDistance;
+  public static Range stopDistance;
+  public static Range carStopDistance;
+  public static Range trafficLightGreenTime;
+  public static Range trafficLightYellowTime;
+  public static Range sourceGenerationDelay;
   
   /** the delay used to space out car generation  */
   //public static double sourceGenerationDelay = 10;
