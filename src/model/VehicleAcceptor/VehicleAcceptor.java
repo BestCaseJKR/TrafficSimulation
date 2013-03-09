@@ -1,7 +1,7 @@
 package model.VehicleAcceptor;
 
-import java.util.Queue;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import model.Vehicle.Vehicle;
 import model.Vehicle.VehicleOrientation;
@@ -13,55 +13,73 @@ import model.Vehicle.VehicleOrientation;
  * cars which are in this road. 
  *
  */
-public interface VehicleAcceptor {
+public abstract class VehicleAcceptor {
+	
+	/**
+	 * a list of vehicle objects currently "on" this road
+	 */
+	private SortedSet<Vehicle> _cars = new TreeSet<Vehicle>();
+	
 	/**
 	 * Test if the VehicleAcceptor is prepared to accept the Vehicle object
 	 * @param c
 	 * @return
 	 */
-	public boolean isDriveable(Vehicle c);
+	public abstract Drivability isDriveable(Vehicle c);
 	/**
 	 * add a car to the list.
 	 * @param d
 	 * @return
 	 */
-	public boolean accept(Vehicle d);
+	public boolean accept(Vehicle d) {
+	    if (d == null) { throw new IllegalArgumentException(); }
+	    if (isDriveable(d) == Drivability.NotDriveable) return false;
+	    _cars.add(d);
+	    return true;
+	}
 	/**
 	 * remove the Vehicle from the List
 	 * @param d
 	 */
-	public void remove(Vehicle d);
+	public void remove(Vehicle d) {
+	    if (d != null) {
+	    	_cars.remove(d);
+	    	//System.out.println("Removed " + d + " from " + this);
+	    }
+	}
+	/**
+	 * return a COPY of the cars currently in the VehicleAcceptor
+	 * @return
+	 */
+	public SortedSet<Vehicle> getCars() {
+		return new TreeSet<Vehicle>(_cars);
+	}
 	/**
 	 * set the next VehicleAcceptor object. Think the next segment of road.	
 	 * @param next
 	 */
-	public void setNextSeg(VehicleAcceptor next);
+	public abstract void setNextSeg(VehicleAcceptor next);
 	/**
 	 * get the next VehicleAcceptor object
 	 * @param c 
 	 * @return
 	 * TODO: Improve interface to not rely on a Vehicle to return its next segment
 	 */
-	public VehicleAcceptor getNextSeg(Vehicle c);
+	public abstract VehicleAcceptor getNextSeg(Vehicle c);
 	/**
 	 * set the VehicleOrientation of the current road
 	 * @param o
 	 */
-	public void setOrientation(VehicleOrientation o);
+	public abstract void setOrientation(VehicleOrientation o);
 	/**
 	 * get the VehicleOrientation of the road. 
 	 * @return
 	 */
-	public VehicleOrientation getOrientation();
-	/**
-	 * return a COPY of the cars currently in the VehicleAcceptor
-	 * @return
-	 */
-	public SortedSet<Vehicle> getCars();
+	public abstract VehicleOrientation getOrientation();
 	/**
 	 * return the length of the road
 	 * @return
 	 */
-	public double getLength();
+	public abstract double getLength();
 	
 }

@@ -110,9 +110,9 @@ public class SwingAnimatorBuilder implements AnimatorBuilder {
       } */
       
     	for (Element<Intersection> e : _intersectionElements) {
-            if (e.x.getLight().getState() == LightState.GreenNS_RedEW) {
+            if (e.x.getLightControl().getState() == LightState.GreenNS_RedEW) {
               g.setColor(Color.GREEN);
-            } else if(e.x.getLight().getState() == LightState.YellowNS_RedEW) {
+            } else if(e.x.getLightControl().getState() == LightState.YellowNS_RedEW) {
               g.setColor(Color.YELLOW);
             } else {
               g.setColor(Color.RED);

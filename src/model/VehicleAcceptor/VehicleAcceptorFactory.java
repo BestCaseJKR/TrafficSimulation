@@ -5,12 +5,19 @@ import model.Agent.TimeServer;
 public class VehicleAcceptorFactory {
 	private VehicleAcceptorFactory() { }
 	
-	public static VehicleAcceptor generateRoad() {
+	public static VehicleAcceptor newRoad() {
 		Road r= new Road();
 		return r;
 	}
 	
-	public static VehicleAcceptor generateSink(TimeServer ts) {
+	public static VehicleAcceptor newIntersection(TimeServer ts) {
+		Intersection i = new Intersection();
+		LightController lc = new LightController(ts);
+		i.setLightControl(lc);
+		return i;
+	}
+	
+	public static VehicleAcceptor newSink(TimeServer ts) {
 		Sink s = new Sink(ts);
 		return s;
 	}

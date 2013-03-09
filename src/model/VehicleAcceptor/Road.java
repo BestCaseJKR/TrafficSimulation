@@ -1,22 +1,13 @@
 package model.VehicleAcceptor;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 import model.MP;
 import model.Vehicle.Vehicle;
 import model.Vehicle.VehicleOrientation;
 
 
-public class Road implements VehicleAcceptor {
+public class Road extends VehicleAcceptor {
 
-	/**
-	 * a list of vehicle objects currently "on" this road
-	 */
-	private SortedSet<Vehicle> _cars = new TreeSet<Vehicle>();
+
 	/**
 	 * the next vehicle acceptor in the graph
 	 */
@@ -30,23 +21,8 @@ public class Road implements VehicleAcceptor {
 	 */
 	private double _length = MP.roadSegmentLength.getDoubleInRange();
 	
-	public boolean isDriveable(Vehicle c) {
-		return true;
-	}
-	
-	public boolean accept(Vehicle d) {
-	    if (d == null) { throw new IllegalArgumentException(); }
-	    if (!isDriveable(d)) return false;
-	    _cars.add(d);
-	    return true;
-	}
-
-	@Override
-	public void remove(Vehicle d) {
-	    if (d != null) {
-	    	_cars.remove(d);
-	    	//System.out.println("Removed " + d + " from " + this);
-	    }
+	public Drivability isDriveable(Vehicle c) {
+		return Drivability.Driveable;
 	}
 
 	@Override
@@ -68,11 +44,6 @@ public class Road implements VehicleAcceptor {
 	@Override
 	public VehicleOrientation getOrientation() {
 		return _orientation;
-	}
-
-	@Override
-	public SortedSet<Vehicle> getCars() {
-		return _cars;
 	}
 
 	@Override

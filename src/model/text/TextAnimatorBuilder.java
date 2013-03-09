@@ -72,13 +72,8 @@ public class TextAnimatorBuilder implements AnimatorBuilder {
     public void update(Observable o, Object arg) {
       for (Element<Light> e : _lightElements) {
         System.out.print("Light at (" + e.i + "," + e.j + "): ");
-        if (e.x.getState() == LightState.GreenNS_RedEW) {
-        	System.out.println("Green");
-          } else if(e.x.getState() == LightState.YellowNS_RedEW) {
-        	  System.out.println("Yellow");
-          } else {
-        	  System.out.println("Red");
-          }
+
+        	System.out.println(e.x.getColor());
       }
       for (Element<VehicleAcceptor> e : _roadElements) {
         for (Vehicle d : e.x.getCars()) {

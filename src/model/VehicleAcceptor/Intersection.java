@@ -1,19 +1,12 @@
 package model.VehicleAcceptor;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import model.MP;
 import model.Vehicle.Vehicle;
 import model.Vehicle.VehicleOrientation;
 
-public class Intersection implements VehicleAcceptor {
+public class Intersection extends VehicleAcceptor {
 	
-	Intersection() { System.out.println(this);  }
+	Intersection() {  }
 	
 	public String key;
 	
@@ -36,47 +29,26 @@ public class Intersection implements VehicleAcceptor {
 	
 	private double _length = MP.intersectionLength.getDoubleInRange();
 	
-	private Light _light;
-	public void setLight(Light l) {
-		_light = l;
+	private LightController _lightControl;
+	public void setLightControl(LightController l) {
+		_lightControl = l;
 	}
-	public Light getLight() {
-		return _light;
+	public LightController getLightControl() {
+		return _lightControl;
 	}
 
-	private SortedSet<Vehicle> _cars = new TreeSet<Vehicle>();
 	
-	@Override
-	public boolean isDriveable(Vehicle c) {
-		if (c.getOrientation()== _light.getState().getAllowedOrientation()) {
-			if (_light.getState().isYellow() && (c.getBrakeDistance() >= (c.getCurrentRoad().getLength() - c.getPosition()))) {
-				return false;
+	public Drivability isDriveable(Vehicle c) {
+		if (c.getOrientation()== _lightControl.getState().getAllowedOrientation()) {
+			if (_lightControl.getState().isYellow()) {
+				return Drivability.Caution;
 			}
-			return true;
+			return Drivability.Driveable;
 		} else {
-			return false;
+			return Drivability.NotDriveable;
 		}
 	}
-	@Override
-	public boolean accept(Vehicle d) {
-		// TODO Check light and decide to accept
-	    if (d == null) { throw new IllegalArgumentException(); }
-	    if (!isDriveable(d))  {
-	    	return false;
-	    }
-	    //System.out.println("Intersection has car " + d);
 
-	    _cars.add(d);
-	    return true;
-	}
-	@Override
-	public void remove(Vehicle d) {
-		//if cars isnt empty...
-		if (!_cars.remove(d)) {
-			System.out.println("Couldnt Remove " + d + " from " + this);
-		}
-		//System.out.println("Removed " + d + " from " + this);
-	}
 	
 	  public void setNextSeg(VehicleAcceptor next) {
 		  
@@ -98,10 +70,7 @@ public class Intersection implements VehicleAcceptor {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	@Override
-	public SortedSet<Vehicle> getCars() {
-		return _cars;
-	}
+
 	@Override
 	public double getLength() {
 		return _length;

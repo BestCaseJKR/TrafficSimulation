@@ -69,7 +69,6 @@ public final class TimeServerQueue extends Observable implements TimeServer {
         super.setChanged();
         super.notifyObservers();
       }
-      double lastTime = _currentTime;
       _currentTime = _queue.peek().waketime;
       dequeue().run();
       //super.setChanged();

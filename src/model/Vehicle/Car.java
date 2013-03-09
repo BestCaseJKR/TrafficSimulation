@@ -2,12 +2,12 @@ package model.Vehicle;
 
 import java.awt.Color;
 import java.util.NoSuchElementException;
-import java.util.Queue;
 import java.util.SortedSet;
 
 import model.MP;
 import model.Agent.Agent;
 import model.Agent.TimeServer;
+import model.VehicleAcceptor.Drivability;
 import model.VehicleAcceptor.Intersection;
 import model.VehicleAcceptor.VehicleAcceptor;
 
@@ -179,7 +179,7 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 		    	} else {
 		    		//the car was rejected by the next road! set the max move to be the 
 		    		//length of the road - stopDistance, which should be the max value for the position
-		    		nextPos = this.getCurrentRoad().getLength() - _stopDistance;
+		    		nextPos = this.getCurrentRoad().getLength();
 		    	}
 	  		}
 	  		
@@ -251,7 +251,7 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 			  VehicleAcceptor next = this.getCurrentRoad().getNextSeg(this);
 			  //now make sure there is space for it and that is will accept it
 			  //System.out.println("Next " + next.getClass() + " " + this);
-			  if (!isSpaceForCar(next) || !next.accept(this)) {
+			  if (!isNextVADriveable() || !isSpaceForCar(next) || !next.accept(this)) {
 				  //System.out.println("Rejected by " + next.getClass() + " " + this + " Driveable? " + next.isDriveable(this) + " CARS: " + next.getCars());
 				  return false;
 			  }
@@ -303,6 +303,19 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 	public void setDisposed() {
 		_isDisposed = true;
 		
+	}
+	
+	public boolean isNextVADriveable() {
+		
+		Drivability d = this.getCurrentRoad().getNextSeg(this).isDriveable(this);
+		
+		if (d == Drivability.NotDriveable) {
+			return false;
+		} else if (d == Drivability.Caution && (this.getCurrentRoad().getLength() - this.getPosition()) <= this.getBrakeDistance() ) {
+			
+			return false;
+		}
+		return true;
 	}
 	
 }

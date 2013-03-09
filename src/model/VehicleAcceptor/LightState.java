@@ -1,24 +1,16 @@
 package model.VehicleAcceptor;
 
-import model.MP;
 import model.Vehicle.VehicleOrientation;
 
 public enum LightState {
-	GreenNS_RedEW(MP.trafficLightGreenTime.getDoubleInRange(), VehicleOrientation.North_South, false),
-	YellowNS_RedEW(MP.trafficLightYellowTime.getDoubleInRange(), VehicleOrientation.North_South, true),
-	RedNS_GreenEW(MP.trafficLightGreenTime.getDoubleInRange(), VehicleOrientation.East_West, false),
-	RedNS_YellowEW(MP.trafficLightYellowTime.getDoubleInRange(), VehicleOrientation.East_West, true);
+	GreenNS_RedEW(VehicleOrientation.North_South, false),
+	YellowNS_RedEW(VehicleOrientation.North_South, true),
+	RedNS_GreenEW(VehicleOrientation.East_West, false),
+	RedNS_YellowEW(VehicleOrientation.East_West, true);
 	
-	private LightState(double dur, VehicleOrientation or, boolean yellow) {
-		duration = dur;
+	private LightState(VehicleOrientation or, boolean yellow) {
 		allowedOrientation = or;
 		_isYellow = yellow;
-	}
-	
-	private double duration;
-	
-	public double getDuration() {
-		return duration;
 	}
 	
 	private VehicleOrientation allowedOrientation;

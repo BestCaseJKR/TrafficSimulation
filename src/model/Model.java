@@ -8,7 +8,6 @@ import java.util.Observer;
 import model.Agent.Agent;
 import model.Agent.Source;
 import model.Agent.TimeServer;
-import model.Agent.TimeServerLinked;
 import model.Vehicle.Car;
 import model.Vehicle.VehicleOrientation;
 import model.VehicleAcceptor.Intersection;
@@ -16,7 +15,6 @@ import model.VehicleAcceptor.Light;
 import model.VehicleAcceptor.Road;
 import model.VehicleAcceptor.Sink;
 import model.VehicleAcceptor.VehicleAcceptor;
-import model.VehicleAcceptor.VehicleAcceptorBuilder;
 import model.VehicleAcceptor.VehicleAcceptorFactory;
 
 import util.Animator;
@@ -74,13 +72,11 @@ public class Model extends Observable implements Observer {
 	    // Add Lights
 	    for (int i=0; i<rows; i++) {
 	      for (int j=0; j<columns; j++) {
-	    	li = new Light(_ts);
-	        intersections[i][j] = (Intersection)VehicleAcceptorBuilder.newIntersection();
-	        intersections[i][j].setLight(li);
+	    	  
+	        intersections[i][j] = (Intersection)VehicleAcceptorFactory.newIntersection(ts);
 	        intersections[i][j].key = "I =" + i + " J=" + j;
 	        //builder.addLight(li, i, j);
 	        builder.addIntersection(intersections[i][j], i, j);
-	        ts.enqueue(li.getState().getDuration(), li);
 	      }
 	    }
 
@@ -104,7 +100,7 @@ public class Model extends Observable implements Observer {
 		        	Source s = new Source(l, ts);
 	        	}
 	        	if (j == columns) {
-	        		Sink sink = (Sink)VehicleAcceptorFactory.generateSink(ts);
+	        		Sink sink = (Sink)VehicleAcceptorFactory.newSink(ts);
 		        	l.setNextSeg(sink);
 	        	}
 	        } else {
@@ -116,7 +112,7 @@ public class Model extends Observable implements Observer {
 		        	Source s = new Source(l, ts);
 	        	}
 	        	if ((j == columns && eastToWest == false) || (j == 0 && eastToWest)) {
-	        		Sink sink = (Sink)VehicleAcceptorFactory.generateSink(ts);
+	        		Sink sink = (Sink)VehicleAcceptorFactory.newSink(ts);
 		        	l.setNextSeg(sink);
 	        	}
 	        	
