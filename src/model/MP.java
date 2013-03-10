@@ -1,6 +1,7 @@
 package model;
 
 import model.TrafficGrid.GridDimension;
+import model.TrafficGrid.TrafficGridPattern;
 
 
 /**
@@ -16,11 +17,8 @@ public class MP {
   public static void setDefaults() {
 	  simulationTimeStep = .1;
 	  simulationRunTime = 1000.0;
-	  grid = new GridDimension(){{
-		  setRow(2);
-		  setColumn(3);
-	  }};
-	  simulationTrafficPatter = TrafficPattern.Alternating;
+	  grid = new GridDimension(2,3){{ }};
+	  simulationTrafficPatter = TrafficGridPattern.Alternating;
 	  carEntryRate = new Range(2, 25);
 	  roadSegmentLength = new Range(200,500);
 	  intersectionLength = new Range(10,15);
@@ -40,7 +38,7 @@ public class MP {
   public static double simulationTimeStep;
   public static double simulationRunTime;
   public static GridDimension grid;
-  public static TrafficPattern simulationTrafficPatter;
+  public static TrafficGridPattern simulationTrafficPatter;
   public static Range carEntryRate;
   public static Range roadSegmentLength;
   public static Range intersectionLength;

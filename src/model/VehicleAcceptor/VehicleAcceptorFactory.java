@@ -16,6 +16,11 @@ public class VehicleAcceptorFactory {
 		i.setLightControl(lc);
 		return i;
 	}
+
+	public static VehicleAcceptor newSource(TimeServer ts) {
+		Source s = new Source(ts);
+		return s;
+	}
 	
 	public static VehicleAcceptor newSink(TimeServer ts) {
 		Sink s = new Sink(ts);

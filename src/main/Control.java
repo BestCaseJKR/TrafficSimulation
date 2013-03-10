@@ -2,9 +2,9 @@ package main;
 
 import model.Model;
 import model.MP;
-import model.TrafficPattern;
 import model.Agent.TimeServer;
 import model.Agent.TimeServerLinked;
+import model.TrafficGrid.TrafficGridPattern;
 import model.swing.SwingAnimatorBuilder;
 import ui.UIError;
 import ui.PopupUI;
@@ -129,7 +129,7 @@ public class Control {
 							sb.append("\n");
 							sb.append("Simulation Runtime:" + MP.simulationRunTime);
 							sb.append("\n");											
-							sb.append("Grid Size:[rows=" + MP.grid.rows + ",columns=" + MP.grid.columns + "]");
+							sb.append("Grid Size:[rows=" + MP.grid.getRow() + ",columns=" + MP.grid.getColumn() + "]");
 							sb.append("\n");
 							sb.append("Traffic Pattern:" + MP.simulationTrafficPatter);
 							sb.append("\n");
@@ -174,13 +174,13 @@ public class Control {
 					paramsMenu.add("Grid Size", new UIMenuAction() {
 						public void run() {	
 							UIFormBuilder f = new UIFormBuilder();
-							f.add("Rows[Current Value=" + MP.grid.rows + "]: " , _intTest);
+							f.add("Rows[Current Value=" + MP.grid.getRow() + "]: " , _intTest);
 							
 							
-							f.add("Columns[Current Value=" + MP.grid.columns + "]: " , _intTest);
+							f.add("Columns[Current Value=" + MP.grid.getColumn() + "]: " , _intTest);
 							String[] res = _ui.processForm(f.toUIForm("Grid Size"));
-							MP.grid.rows = Integer.parseInt(res[0]);
-							MP.grid.columns = Integer.parseInt(res[1]);
+							MP.grid.setRow(Integer.parseInt(res[0]));
+							MP.grid.setColumn(Integer.parseInt(res[1]));
 							}	
 						});
 					
@@ -191,9 +191,9 @@ public class Control {
 							String[] res = _ui.processForm(f.toUIForm("Traffic Pattern"));
 							int resInt = Integer.parseInt(res[0]);
 								if (resInt == 1) {
-									MP.simulationTrafficPatter = TrafficPattern.Simple;
+									MP.simulationTrafficPatter = TrafficGridPattern.Simple;
 								} else if (resInt == 2) {
-									MP.simulationTrafficPatter = TrafficPattern.Alternating;
+									MP.simulationTrafficPatter = TrafficGridPattern.Alternating;
 								} else {
 									_ui.displayError("Please enter 1 or 2");
 								}

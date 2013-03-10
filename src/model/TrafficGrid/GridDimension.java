@@ -25,4 +25,10 @@ public abstract class GridDimension {
 	public void setColumn(int column) {
 		this.column = column;
 	}
+	
+	public GridDimension(int row, int column) {
+		this.setRow(row);
+		this.setColumn(column);
+	}
+	
 }

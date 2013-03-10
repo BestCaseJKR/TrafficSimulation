@@ -52,7 +52,7 @@ public abstract class VehicleAcceptor {
 	 * @return
 	 */
 	public SortedSet<Vehicle> getCars() {
-		return new TreeSet<Vehicle>(_cars);
+		return _cars;
 	}
 	/**
 	 * set the next VehicleAcceptor object. Think the next segment of road.	
