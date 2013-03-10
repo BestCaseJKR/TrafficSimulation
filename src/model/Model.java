@@ -8,6 +8,8 @@ import java.util.Observer;
 import model.Agent.Agent;
 import model.Agent.Source;
 import model.Agent.TimeServer;
+import model.TrafficGrid.GridDimension;
+import model.TrafficGrid.TrafficGridBuilder;
 import model.Vehicle.Car;
 import model.Vehicle.VehicleOrientation;
 import model.VehicleAcceptor.Intersection;
@@ -31,7 +33,6 @@ public class Model extends Observable implements Observer {
 
   /** Creates a model to be visualized using the <code>builder</code>.
    *  If the builder is null, no visualization is performed.
-   *  Each road has one {@link Car}.
    *
    */
   public Model(AnimatorBuilder builder, TimeServer t) {
@@ -66,16 +67,14 @@ public class Model extends Observable implements Observer {
 
   private void setup(AnimatorBuilder builder, TimeServer ts, int rows, int columns) {
 	    List<VehicleAcceptor> roads = new ArrayList<VehicleAcceptor>();
-	    Intersection[][] intersections = new Intersection[rows][columns];
-	    Boolean reverse;
-	    Light li;
+	    
+	    
+	    TrafficGridBuilder tb = new TrafficGridBuilder(MP.simulationTrafficPatter, new GridDimension(rows, columns), ts);
+	    
+	    Intersection[][] intersections = tb.buildIntersections();
 	    // Add Lights
 	    for (int i=0; i<rows; i++) {
 	      for (int j=0; j<columns; j++) {
-	    	  
-	        intersections[i][j] = (Intersection)VehicleAcceptorFactory.newIntersection(ts);
-	        intersections[i][j].key = "I =" + i + " J=" + j;
-	        //builder.addLight(li, i, j);
 	        builder.addIntersection(intersections[i][j], i, j);
 	      }
 	    }

@@ -1,5 +1,7 @@
 package model;
 
+import model.TrafficGrid.GridDimension;
+
 
 /**
  * Static class for model parameters.
@@ -14,7 +16,10 @@ public class MP {
   public static void setDefaults() {
 	  simulationTimeStep = .1;
 	  simulationRunTime = 1000.0;
-	  grid = new GridDimensions(2,3);
+	  grid = new GridDimension(){{
+		  setRow(2);
+		  setColumn(3);
+	  }};
 	  simulationTrafficPatter = TrafficPattern.Alternating;
 	  carEntryRate = new Range(2, 25);
 	  roadSegmentLength = new Range(200,500);
@@ -34,7 +39,7 @@ public class MP {
   
   public static double simulationTimeStep;
   public static double simulationRunTime;
-  public static GridDimensions grid;
+  public static GridDimension grid;
   public static TrafficPattern simulationTrafficPatter;
   public static Range carEntryRate;
   public static Range roadSegmentLength;

@@ -8,8 +8,6 @@ public class Intersection extends VehicleAcceptor {
 	
 	Intersection() {  }
 	
-	public String key;
-	
 	private VehicleAcceptor _nsRoad;
 	public VehicleAcceptor getNSRoad() {
 		return _nsRoad;
@@ -77,7 +75,7 @@ public class Intersection extends VehicleAcceptor {
 	}
 
 	public String toString() {
-		return "Intersection(Key=" + this.key + "): L: " + this.getLength() + " with cars " + this.getCars();
+		return "Intersection: L: " + this.getLength() + " with cars " + this.getCars();
 	}
 	
 }
