@@ -4,9 +4,18 @@ package model.TrafficGrid;
 import model.Vehicle.VehicleOrientation;
 import model.VehicleAcceptor.Intersection;
 import model.VehicleAcceptor.VehicleAcceptor;
-
+/**
+ * Enum representing the different TrafficPatterns available.
+ * Each implements the abstract method, linkRoad
+ * @author johnreagan
+ *
+ */
 public enum TrafficGridPattern {
 	Simple {
+		/**
+		 * Link roads in the simple manner. Sources first, the roads/intersections, followed
+		 * by the sink
+		 */
 		public void linkRoad(VehicleAcceptor[] roads,
 				Intersection[] intersections, VehicleAcceptor source,
 				VehicleAcceptor sink) {
@@ -31,7 +40,15 @@ public enum TrafficGridPattern {
 			
 		}
 	},
+	/**
+	 * Alternating traffic pattern
+	 */
 	Alternating {
+		/**
+		 * linkRoad method to link the supplied roads[] array together.
+		 * Links Sink <- Roads/Intersections <- Source, so the sink is linked to the first
+		 * elements and the source to the last.
+		 */
 		public void linkRoad(VehicleAcceptor[] roads,
 				Intersection[] intersections, VehicleAcceptor source,
 				VehicleAcceptor sink ) {
@@ -58,7 +75,13 @@ public enum TrafficGridPattern {
 
 	};
 	
-	
+	/**
+	 * Method def for the state's linkRoad method.
+	 * @param roads
+	 * @param intersections
+	 * @param source
+	 * @param sink
+	 */
 	public abstract void linkRoad(VehicleAcceptor[] roads,
 			Intersection[] intersections, VehicleAcceptor source,
 			VehicleAcceptor sink);

@@ -1,5 +1,7 @@
 package model.VehicleAcceptor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -18,7 +20,7 @@ public abstract class VehicleAcceptor {
 	/**
 	 * a list of vehicle objects currently "on" this road
 	 */
-	private SortedSet<Vehicle> _cars = new TreeSet<Vehicle>();
+	private List<Vehicle> _cars = new ArrayList<Vehicle>();
 	
 	/**
 	 * Test if the VehicleAcceptor is prepared to accept the Vehicle object
@@ -51,7 +53,7 @@ public abstract class VehicleAcceptor {
 	 * return a COPY of the cars currently in the VehicleAcceptor
 	 * @return
 	 */
-	public SortedSet<Vehicle> getCars() {
+	public List<Vehicle> getCars() {
 		return _cars;
 	}
 	/**

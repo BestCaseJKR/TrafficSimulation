@@ -1,5 +1,6 @@
-package model;
+package Animator;
 
+import model.Model;
 import model.VehicleAcceptor.Intersection;
 import model.VehicleAcceptor.Light;
 import model.VehicleAcceptor.VehicleAcceptor;
@@ -38,21 +39,6 @@ public interface AnimatorBuilder {
   public void addVerticalRoad(VehicleAcceptor l, int i, int j, boolean southToNorth);
 }
 
-/**
- * Null object for {@link AnimatorBuilder}.
- */
-class NullAnimatorBuilder implements AnimatorBuilder {
-  public Animator getAnimator() { return new NullAnimator(); }
-  public void addLight(Light d, int i, int j) { }
-  public void addHorizontalRoad(VehicleAcceptor l, int i, int j, boolean eastToWest) { }
-  public void addVerticalRoad(VehicleAcceptor l, int i, int j, boolean southToNorth) { }
-  public void addIntersection(Intersection intersection, int i, int j) {	}
-}
 
-/**
- * Null object for {@link Animator}.
- */
-class NullAnimator implements Animator {
-  public void update(java.util.Observable o, Object arg) { }
-  public void dispose() { }
-}
+
+

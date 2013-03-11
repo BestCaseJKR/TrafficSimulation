@@ -5,7 +5,12 @@ import model.Agent.Agent;
 import model.Agent.TimeServer;
 import model.Vehicle.Vehicle;
 import model.Vehicle.VehicleOrientation;
-
+/**
+ * Sink class used to remove cars which are added to it. Essentially if a car
+ * sends itself to a sink, it is removed from the sim.
+ * @author johnreagan
+ *
+ */
 public class Sink extends VehicleAcceptor implements Agent {
 	
 	public Sink (TimeServer ts) {
@@ -18,17 +23,23 @@ public class Sink extends VehicleAcceptor implements Agent {
 	 */
 	private TimeServer _ts;
 	
-	@Override
+	/**
+	 * Action of the sink. Remove any cars found in the cars list
+	 */
 	public void run() {
-		for(Vehicle c: this.getCars()) {
-			remove(c);
-			c.setDisposed();
-			c = null;
+		Object[] i = this.getCars().toArray();
+		for(Object o: i) {
+			Vehicle v = (Vehicle)o;
+			remove(v);
+			v.setDisposed();
+			v = null;
 		}
 		_ts.enqueue(_ts.currentTime() + MP.simulationTimeStep, this);
 	}
 
-	@Override
+	/**
+	 * Get the drivability of the road. Always return Drivable
+	 */
 	public Drivability isDriveable(Vehicle c) {
 		// TODO Auto-generated method stub
 		return Drivability.Driveable;
@@ -60,7 +71,9 @@ public class Sink extends VehicleAcceptor implements Agent {
 	}
 
 
-	@Override
+	/**
+	 * Return the max value for a double
+	 */
 	public double getLength() {
 		return Double.MAX_VALUE;
 	}

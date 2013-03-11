@@ -4,7 +4,12 @@ import model.MP;
 import model.Vehicle.Vehicle;
 import model.Vehicle.VehicleOrientation;
 
-
+/**
+ * Road class which implements VehicleAcceptor. Essentially a normal
+ * road for the purposes of this simulation
+ * @author johnreagan
+ *
+ */
 public class Road extends VehicleAcceptor {
 
 
@@ -20,33 +25,45 @@ public class Road extends VehicleAcceptor {
 	 * get the length of the road
 	 */
 	private double _length = MP.roadSegmentLength.getDoubleInRange();
-	
+	/**
+	 * Return the drivabaility of the road.
+	 */
 	public Drivability isDriveable(Vehicle c) {
 		return Drivability.Driveable;
 	}
-
-	@Override
+	/**
+	 * set the next vehicleAcceptor next.
+	 * @throws IllegalArgumentException if null value supplied
+	 */
 	public void setNextSeg(VehicleAcceptor next) {
 		if (next == null) throw new IllegalArgumentException(); 
 		_next = next;
 	}
 
-	@Override
+	/**
+	 * Get the next segment
+	 */
 	public VehicleAcceptor getNextSeg(Vehicle c) {
 		return _next;
 	}
 
-	@Override
+	/**
+	 * Set the orientation of the road
+	 */
 	public void setOrientation(VehicleOrientation o) {
 		_orientation = o;
 	}
 
-	@Override
+	/**
+	 * get the orientation of the road
+	 */
 	public VehicleOrientation getOrientation() {
 		return _orientation;
 	}
 
-	@Override
+	/**
+	 * Return the length of the road
+	 */
 	public double getLength() {
 		return _length;
 	}

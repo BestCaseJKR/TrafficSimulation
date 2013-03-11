@@ -1,7 +1,13 @@
 package model.VehicleAcceptor;
 
 import model.Vehicle.VehicleOrientation;
-
+/**
+ * Enum describing the possible states of a Light.
+ * Implements the strategy pattern as it keeps track of
+ * which orientation each state allows and if it is Yellow of not
+ * @author johnreagan
+ *
+ */
 public enum LightState {
 	GreenNS_RedEW(VehicleOrientation.North_South, false),
 	YellowNS_RedEW(VehicleOrientation.North_South, true),

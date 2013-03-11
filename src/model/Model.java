@@ -1,24 +1,14 @@
 package model;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import Animator.AnimatorBuilder;
+import Animator.NullAnimatorBuilder;
+
 import model.Agent.Agent;
 import model.Agent.TimeServer;
-import model.TrafficGrid.GridDimension;
 import model.TrafficGrid.TrafficGridBuilder;
-import model.TrafficGrid.TrafficGridPattern;
-import model.Vehicle.Car;
-import model.Vehicle.VehicleOrientation;
-import model.VehicleAcceptor.Intersection;
-import model.VehicleAcceptor.Light;
-import model.VehicleAcceptor.Road;
-import model.VehicleAcceptor.Sink;
-import model.VehicleAcceptor.Source;
-import model.VehicleAcceptor.VehicleAcceptor;
-import model.VehicleAcceptor.VehicleAcceptorFactory;
 
 import util.Animator;
 
@@ -65,15 +55,17 @@ public class Model extends Observable implements Observer {
     _animator.dispose();
     _disposed = true;
   }
-
+/**
+ * Initialize the TrafficGrid.
+ * @param builder - AnimatorBuilder which will be bound to the model.
+ * @param ts - TimeServer used to simulate time on the model
+ * @param rows - number of rows in the grid
+ * @param columns - number of columns in the grid
+ */
   private void setup(AnimatorBuilder builder, TimeServer ts, int rows, int columns) {
 	    
 	    
 	    TrafficGridBuilder tb = new TrafficGridBuilder(rows, columns, ts);
-
-		tb.buildIntersections();
-		tb.buildHorizontalRoads();
-		tb.buildVerticalRoads();
 
 		
 		tb.populateAnimatorBuilder(builder);

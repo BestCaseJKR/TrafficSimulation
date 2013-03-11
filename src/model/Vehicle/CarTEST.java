@@ -98,9 +98,13 @@ public class CarTEST extends TestCase {
 		
 		Assert.assertEquals(c2.checkFreeSpaceAhead(), (c1.getBackPosition() - c2.getPosition()));
 		
+		ts.run(1000);
+		System.out.println(c1);
+
+		System.out.println(c2);
+		Assert.assertTrue(c1.getBackPosition() > c2.getPosition());
+		
 	}
-	
-	
 	
 	
 }

@@ -5,7 +5,9 @@ import junit.framework.TestCase;
 
 public class RangeTEST extends TestCase {
 
-	
+	/**
+	 * Basic test of Range objects
+	 */
 	public void testDoubleInRange() {
 		
 		long min = 10;

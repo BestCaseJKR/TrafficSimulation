@@ -1,9 +1,10 @@
 package model.Vehicle;
 
 import java.awt.Color;
-import java.util.NoSuchElementException;
-import java.util.SortedSet;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import model.MP;
 import model.Agent.Agent;
 import model.Agent.TimeServer;
@@ -11,13 +12,24 @@ import model.VehicleAcceptor.Drivability;
 import model.VehicleAcceptor.Intersection;
 import model.VehicleAcceptor.VehicleAcceptor;
 
-
+/**
+ * Car class used to represents cars in the traffic simulation. Implements Vehicle primarily.
+ * @author johnreagan
+ *
+ */
 public class Car implements Vehicle, Agent, Comparable<Vehicle> {
-	
+	/**
+	 * Contsructor. Supply the timeserver and vehicleacceptor
+	 * @param ts
+	 * @param r
+	 */
 	Car(TimeServer ts, VehicleAcceptor r) {
 		_ts = ts;
+		//set the VA as the current road
 		this.setCurrentVehicleAcceptor(r, this.getLength());
+		//set the orientation to match the road
 		_orientation = r.getOrientation();
+		//enque itself for wakeup
 		_ts.enqueue(ts.currentTime()+MP.simulationTimeStep, this);
 	}
 	
@@ -83,18 +95,74 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 		  
 		  
 		  //this.setPosition(requestedPostion);
-		  System.out.println("Added car(" + this.hashCode() + ") to VA: Current Postion: " + _position + " Requested: " + requestedPostion + " velocity: " + _velocity  + " in Road: " + this.getCurrentRoad());
+		  //System.out.println("Added car(" + this.hashCode() + ") to VA: Current Postion: " + _position + " Requested: " + requestedPostion + " velocity: " + _velocity  + " in Road: " + this.getCurrentRoad());
 	  }
 	
 	  void setPosition(double position) {
 		  if (position > this.getCurrentRoad().getLength() || position < 0) throw new IllegalArgumentException("Position " + position + " exceeds the road length " + this.getCurrentRoad().getLength());
 		  
 		  //remove the car from the road its in, update the position then add it back to ensure its sorted properly
-		  this.getCurrentRoad().remove(this);
 		  _position = position;
-		  this.getCurrentRoad().accept(this);
 	  }
-  
+	  /**
+	   * Method to check the total free space in front of the car.
+	   * If the current VA is empty in front of us, recursively check the next roads
+	   * to find out the total space
+	   * @return
+	   */
+	  public double checkFreeSpaceAhead() {
+		  //get a copy of the cars in this road
+		  List<Vehicle> cars = new ArrayList<Vehicle>(this.getCurrentRoad().getCars());
+		  //sort it by the position attribute from high -> low
+		  Collections.sort(cars, new Comparator<Vehicle>() {
+			public int compare(Vehicle o1, Vehicle o2) {
+				//double c
+				if(o1.getPosition() > o2.getPosition()) {
+					return -1;
+				} else if (o1.getPosition() < o2.getPosition()) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}});
+		  
+			//if the set is empty, return the road length
+			if (cars.size() == 0) {
+				double d = getFreeSpaceInOutsideVehicleAcceptor(this.getCurrentRoad().getNextSeg(this));
+				//System.out.println("Cars not found in road! " + this + " " + cars);
+				return this.getCurrentRoad().getLength() + d;
+			}
+			//if the current car isn't in the set, return the back position of the last car
+			//if (!cars.contains(this)) {
+			//	System.out.println("Car(" + this.hashCode() + ") not in road(" + this.getCurrentRoad() + ") " + this + " return " + cars.last().getBackPosition());
+			//	return cars.last().getBackPosition();
+			//}
+			//System.out.println("FIRST CAR IN road(l=" + cars.get(0) + ") " + cars );
+			if (this.equals(cars.get(0))) {
+				//the car is first, return the remaining length of the road AND check the next roads for free space
+				double d = getFreeSpaceInOutsideVehicleAcceptor(this.getCurrentRoad().getNextSeg(this));
+				//System.out.println("FIRST CAR IN road(l=" + this.getCurrentRoad().getLength() + ") " + this + " return " + (this.getCurrentRoad().getLength() - this.getPosition()) + " " + d + " " + cars);
+				return (this.getCurrentRoad().getLength() - this.getPosition()) + d;
+			}
+			//get a set of all elements which are greater than or equal to this object
+			int index = cars.indexOf(this);
+			if(index == -1) {
+				index = cars.size();
+			}
+			List<Vehicle> frontCars = cars.subList(0, index);
+			//System.out.println("Front Cars(" + frontCars.size() + ") in road(" + this.getCurrentRoad().hashCode() + " w/ length: " + this.getCurrentRoad().getLength() + "): " + frontCars + " vs " + cars + " " + this);
+			if(frontCars.size() > 0 && !this.equals(frontCars.get(frontCars.size() - 1))) {
+				Vehicle v = frontCars.get(frontCars.size() - 1);
+				//System.out.println("V is next car " + v + " to(index=" + index + ") " + this);
+				//System.out.println("FCS: " + frontCars);
+				return v.getBackPosition() - this.getPosition();
+			} else {
+				//System.out.println("ELSE " + (this.getCurrentRoad().getLength() - this.getPosition()) + " to " + this);
+				return this.getCurrentRoad().getLength() - this.getPosition();
+			}		  
+		  
+	  }
+	  /*
 	  	public double checkFreeSpaceAhead() {
 	  		
 			//get a copy of all the vehicles in the VehicleAccpetor object
@@ -131,6 +199,7 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 			}
 	  		
 	  	}
+	  	*/
 	  	/**
 	  	 * calculate the open space in the provide VA
 	  	 * @param va to check for open space
@@ -138,14 +207,18 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 	  	 */
 	  	private double getFreeSpaceInOutsideVehicleAcceptor(VehicleAcceptor va) {
 	  		
-	  		//if va is null, return 0
-	  		if (va == null) {
-	  			return 0;
-	  		}
+	  		
 	  		try {
+		  		//if va is null, return 0
+		  		if (va == null) {
+		  			return 0;
+		  		}
+		  		
+	  			List<Vehicle> cars = va.getCars();
+	  			
 	  			//the va has cars, return the last backPos
-	  			return va.getCars().last().getBackPosition();
-	  		} catch(NoSuchElementException e) {
+	  			return cars.get(cars.size()).getBackPosition();
+	  		} catch(IndexOutOfBoundsException e) {
 	  			//no cars were found, recursively call the function with the next road segment
 	  			return va.getLength() + getFreeSpaceInOutsideVehicleAcceptor(va.getNextSeg(this));	
 	  		}
@@ -190,7 +263,9 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 	  		this.setPosition(nextPos);
 	  		
 	  	}
-	@Override
+	/**
+	 * Run the car with the supplied TimeServers
+	 */
 	public void run() {
 		//System.out.println(this + " is running! at " + _ts.currentTime());
 		if (this.isDisposed()) {
@@ -208,42 +283,59 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 		//System.out.println("Enqued car(" + this.hashCode() + ") for wakeup at" + (_ts.currentTime() + MP.simulationTimeStep));
 	}
 
-	@Override
+	/**
+	 * Return the current road which the object, at least believes, it is on.
+	 */
 	public VehicleAcceptor getCurrentRoad() {
 		return _currentRoad;
 	}
 
-	@Override
+	/**
+	 * Get the position of the front of the vehicle
+	 */
 	public double getPosition() {
 		return _position;
 	}
 
-	@Override
+	/**
+	 * Get the length of the vehicle
+	 */
 	public double getLength() {
 		return _length;
 	}
 
-	@Override
+	/**
+	 * get the position of the back of the vehicle
+	 */
 	public double getBackPosition() {
 		return _position - this.getLength();
 	}
 
-	@Override
+	/**
+	 * Get the brake distance of the object
+	 */
 	public double getBrakeDistance() {
 		return _brakeDistance;
 	}
 	
-	@Override
+	/**
+	 * Return vehicle color
+	 */
 	public Color getColor() {
 		return _color;
 	}
 
-	@Override
+	/**
+	 * Return Vehicle's orientation
+	 */
 	public VehicleOrientation getOrientation() {
 		return _orientation;
 	}
 	
-	@Override
+	/**
+	 * Send the car to the next road segment.
+	 * If we are unable to send it, return false.
+	 */
 	public boolean sendCarToNextSeg(double requestedPostion) {
 		//check if this road has a next segment set.
 		  if (this.getCurrentRoad().getNextSeg(this) != null) {
@@ -264,9 +356,12 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 		  }   
 		return false;
 	}
-	@Override
+	/**
+	 * Check the supplied VehicleAcceptor to see if there is room for the car.
+	 * Returns false if the free space in r < this.getLength()
+	 */
 	public boolean isSpaceForCar(VehicleAcceptor r) {
-		SortedSet<Vehicle> cars = r.getCars();
+		List<Vehicle> cars = r.getCars();
 		if (cars == null) {
 			return true;
 		}
@@ -278,12 +373,16 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 		}
 		return true;
 	}
-
+	/**
+	 * return the string representation of the car
+	 */
 	public String toString() {
 		return "Car(" + this.hashCode() + ") P=" + this.getPosition() + " V=" + _velocity;
 	}
 
-	@Override
+	/**
+	 * Implement comparable. Sorts vehicles from High -> Low by position
+	 */
 	public int compareTo(Vehicle v) {
 		if (v.getPosition() > this.getPosition()) {
 			return 1;
@@ -294,28 +393,38 @@ public class Car implements Vehicle, Agent, Comparable<Vehicle> {
 		}
 	}
 
-	@Override
+	/**
+	 * Check if object is disposed
+	 */
 	public boolean isDisposed() {
 		return _isDisposed;
 	}
 
-	@Override
+	/**
+	 * Set object as disposed
+	 */
 	public void setDisposed() {
 		_isDisposed = true;
 		
 	}
-	
+	/**
+	 * Check is the next VehicleAcceptor is Drivable.
+	 * Responsible for determining if we are able to access a road due to say a yellow light
+	 * @return
+	 */
 	public boolean isNextVADriveable() {
 		
 		Drivability d = this.getCurrentRoad().getNextSeg(this).isDriveable(this);
-		
+		//if its not driveable return false
 		if (d == Drivability.NotDriveable) {
 			return false;
 		} else if (d == Drivability.Caution && (this.getCurrentRoad().getLength() - this.getPosition()) <= this.getBrakeDistance() ) {
-			
+			//the road return Caution and it is within our braking distance. We should stop
 			return false;
 		}
+		//all clear!
 		return true;
 	}
+
 	
 }

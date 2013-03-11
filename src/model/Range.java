@@ -1,9 +1,18 @@
 package model;
 
 import java.util.Random;
-
+/**
+ * Class used to work with a range of doubles.
+ * Can return a double within the provided range
+ * @author johnreagan
+ *
+ */
 public class Range {
-	
+	/**
+	 * Contructor. Sets the range min and max
+	 * @param min - minimum value of range
+	 * @param max - max value of range
+	 */
 	public Range(double min, double max) {
 		_min = min;
 		_max = max;

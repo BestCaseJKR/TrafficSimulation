@@ -1,16 +1,13 @@
 package model.text;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
-import model.AnimatorBuilder;
-import model.MP;
+
+import Animator.AnimatorBuilder;
 import model.Vehicle.Vehicle;
 import model.VehicleAcceptor.Intersection;
 import model.VehicleAcceptor.Light;
-import model.VehicleAcceptor.LightState;
 import model.VehicleAcceptor.VehicleAcceptor;
 import util.Animator;
 

@@ -4,7 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
-import model.AnimatorBuilder;
+
+import Animator.AnimatorBuilder;
 import model.MP;
 import model.Vehicle.Vehicle;
 import model.VehicleAcceptor.Intersection;

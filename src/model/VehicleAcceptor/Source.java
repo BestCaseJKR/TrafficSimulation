@@ -7,14 +7,18 @@ import model.Vehicle.Vehicle;
 import model.Vehicle.VehicleFactory;
 import model.Vehicle.VehicleOrientation;
 
-
+/**
+ * Source object responsible for adding cars to the simulation.
+ * @author johnreagan
+ *
+ */
 public class Source extends VehicleAcceptor implements Agent  {
 	/**
 	 * The attached TimeServer object
 	 */
 	private TimeServer _ts;
 	private VehicleAcceptor _next;
-	private double _delay = MP.sourceGenerationDelay.getDoubleInRange();
+	private double _delay = MP.carEntryRate.getDoubleInRange();
 	public Source(TimeServer ts) {
 		_ts = ts;
 		_ts.enqueue(ts.currentTime(), this);

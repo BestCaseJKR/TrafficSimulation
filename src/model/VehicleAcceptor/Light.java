@@ -1,5 +1,9 @@
 package model.VehicleAcceptor;
-
+/**
+ * LightColor enum showing possible values of a traffic light.
+ * @author johnreagan
+ *
+ */
 enum LightColor {
 	Green,
 	Yellow,
@@ -7,7 +11,9 @@ enum LightColor {
 }
 
 /**
- * A light has a boolean state.
+ * Light object which stores a LightColor state
+ * @author johnreagan
+ *
  */
 public class Light {
 
